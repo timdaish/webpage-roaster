@@ -1,0 +1,21 @@
+body{
+    background-color: #1a524e;
+    color: white;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+input{
+width: 90%;
+}
+#buttons{
+    border: 2px solid #123;
+    margin: 5px 5px 5px 5px;
+    background-color: whitesmoke;
+}
+#summary{
+    background-color: #0b2c2a;
+    min-height: 100px;
+}
+#detail{
+    background-color: #183a38;
+    min-height: 100px;
+}
