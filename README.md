@@ -31,7 +31,7 @@ With a page selected, the work begins to display the data including the followin
 - response header analysis
 - caching header analysis
 
-# Develpment Approach
+# Development Approach
 agile and evolutionary... write a bit, test a bit and repeat.
 
 # Frameworks and Libraries used
