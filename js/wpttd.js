@@ -96,22 +96,29 @@ function getWPTResultsHarFile(server,id)
 function parseHarFileSummary(harFile)
 {
     var noofPages = 0;
-
+    var noofSteps = 0;
+    var noofRuns = 0;
     // prepare divs
     $("summary").append('<div id="test"></div>');
-
-//  console.log(harFile);
+    
+  console.log(harFile);
     $.each(harFile, function(key,obj) {
 //console.log(key,obj);
         console.log(obj.version,obj.browser.name,obj.browser.version);
         $("#summary").append("Browser: " + obj.browser.name + " " + obj.browser.version + "<br/>");
-        $.each(obj.pages, function(keyPages,pages) {
-            console.log(keyPages,pages);
+        $.each(obj.pages, function(keyPages,page) {
+            console.log(keyPages,page);
             noofPages++;
+            if(page._run > noofRuns)
+                noofRuns = page._run;
+                if(page._step > noofSteps)
+                noofSteps = page._step;
             // append to dropdown
-            $("#selPages").append($('<option></option>').val(pages.id).html(pages._URL));
+            $("#selPages").append($('<option></option>').val(page.id).html(page._URL));
         }); // end pages
-        $("#summary").append('Number of pages: ' + noofPages + "<br/>");
+        $("#summary").append('Number of Pages Tested: ' + noofPages + "<br/>");
+        $("#summary").append('Number of Steps: ' + noofSteps + "<br/>");
+        $("#summary").append('Number of Runs: ' + noofRuns + "<br/>");
 
         $.each(obj.entries, function(keyEntries,entries) {
             console.log(keyEntries,entries);

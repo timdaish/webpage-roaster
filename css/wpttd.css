@@ -4,7 +4,7 @@ body{
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
 input{
-width: 90%;
+width: 50%;
 }
 #buttons{
     border: 2px solid #123;
