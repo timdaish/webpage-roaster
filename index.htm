@@ -1,0 +1,31 @@
+<html>
+<head>
+    <title>WPT TD</title>
+    <link rel="stylesheet" href="css/wpttd.css">    
+</head>
+</body>
+<h1>WPT Roaster - Advanced Results Analysis</h1>
+<label for="wptlink">WPT ID</label>
+<input name="wptlink" id="wptlink" value="http://hpdev/results.php?test=180610_DW_1B"/>
+<button name="sbm" id="sbm">Submit</button>
+<div id="containerTest">
+    <div id="buttons">
+        <button name="summary" id="optSummary">Summary</button>
+        <button name="objects" id="optObjects">Objects</button>
+        <button name="headers" id="optHeaders">Headers</button>
+        <button name="images" id="optImages">Images</button>
+        <button name="fonts" id="optFonts">Fonts</button>
+        <button name="thirdparties" id="optThirdParties">Third Parties</button>
+    </div>
+    
+    <div id="pageselection">
+        <label for="selPages">Page</label>
+        <select id='selPages'></select>
+    </div>
+    <div id="summary"></div>
+    <div id="detail"></div>
+</div>
+<script src="js/jquery_3.3.1.min.js" defer></script>
+<script src="js/wpttd.js" defer></script>
+</body>
+</html>
