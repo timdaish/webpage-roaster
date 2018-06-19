@@ -16,6 +16,23 @@ width: 50%;
     min-height: 100px;
 }
 #detail{
-    background-color: #183a38;
+    background-color: #597977;
     min-height: 100px;
 }
+#pageselection{
+    border: 1px solid gray;
+}
+table{
+    color: black;
+}
+.wrap{
+    word-wrap: break-word;
+    white-space: normal;
+    max-width: 200px;
+}
+figure{
+    float:left;
+}
+.displayedimage { background-color: #597977; }
+.displayedimage:hover { background-color: red; }
+.displayedimage.green { background-color: white; }
