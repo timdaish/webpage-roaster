@@ -34,6 +34,6 @@ With a page selected, the work begins to display the data including the followin
 # Develpment Approach
 agile and evolutionary... write a bit, test a bit and repeat.
 
-# libraries used
+# Frameworks and Libraries used
 jQuery 3.3.1
 jQuery Datatables
