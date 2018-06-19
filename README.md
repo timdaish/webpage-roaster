@@ -35,5 +35,5 @@ With a page selected, the work begins to display the data including the followin
 agile and evolutionary... write a bit, test a bit and repeat.
 
 # Frameworks and Libraries used
-jQuery 3.3.1
-jQuery Datatables
+- jQuery 3.3.1
+- jQuery Datatables
