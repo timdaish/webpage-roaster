@@ -1,4 +1,4 @@
-  Copyright [2018] Tim Daish BA(Hons) MBCS CTAL-TM
+  Copyright 2018 Tim Daish BA(Hons) MBCS CTAL-TM
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
    limitations under the License.
 
 
-# webpage-roaster
+# Introduction
 WebPage Roaster - Results Optimisation and Analysis from a WebPageTest result link
 
 This is the start of a new project to take a set of WPT results and display additional analysis in the form of tables and charts.
@@ -30,3 +30,10 @@ With a page selected, the work begins to display the data including the followin
 - domain and network analysis
 - response header analysis
 - caching header analysis
+
+# Develpment Approach
+agile and evolutionary... write a bit, test a bit and repeat.
+
+# libraries used
+jQuery 3.3.1
+jQuery Datatables
