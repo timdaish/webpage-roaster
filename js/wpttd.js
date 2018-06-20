@@ -218,9 +218,33 @@ function parseHarFileSummary(harFile)
 //console.log(page);
 
                 // get page stats
-                addStat(statsList,"Total Page Size","",page._bytesIn,"(bytes)","")
+                addStat(statsList,"Total Page Size","",formatBytes(page._bytesIn),"","")
                 addStat(statsList,"No. of Requests","",page._requests,"","")
                 addStat(statsList,"Speed Index","",page._SpeedIndex,"","")
+                addStat(statsList,"Render Start","",page.pageTimings._startRender/1000,"s","")
+                addStat(statsList,"Base CDN","",page._base_page_cdn,"","");
+                $.each(page._detected, function(kd,kditem) {
+//console.log(kd,kditem);
+                    switch(kd)
+                    {
+                        case "Tag Managers":
+                        addStat(statsList,"Tag Manager","",kditem,"","");
+                    }
+                });
+                if(page._Images)
+                {
+                    var json = JSON.parse(page._Images);
+                    console.log(json);
+                    var noofImages = 0;
+                    $.each(json, function() {
+                        $.each(this, function(k, v) {
+                        /// do stuff
+                        
+                        });
+                        noofImages++;
+                    });
+                    addStat(statsList,"No. of Images","",noofImages,"","");
+                }
             }
             else
             {
@@ -246,21 +270,26 @@ function parseHarFileSummary(harFile)
 
 function addStat(statsList,headline,strapline,value,suffix,format)
 {
+    if(!value)
+        return;
     var lineHeadline = document.createElement("div");
     lineHeadline.setAttribute("class","statheadline");
     var lineValue = document.createElement("div");
-    lineValue.setAttribute("class","statvalue");
     var txtHeadline = document.createTextNode(headline);
     var txtValue = document.createTextNode(value.toLocaleString('en-gb') + " " + suffix);
+    if(txtValue.length < 10)
+        lineValue.setAttribute("class","statvalue");
+    else
+    {
+        lineValue.setAttribute("class","statvalue statvaluesmall");
+    }
+
     lineHeadline.appendChild(txtHeadline);
     lineValue.appendChild(txtValue);
     li = document.createElement("li");
     statsList.appendChild(li);
     li.appendChild(lineHeadline);
     li.appendChild(lineValue);
-
-
-
 }
 
 function parseHarFileObjects()
@@ -826,3 +855,5 @@ function getNiceTime(fromDate, toDate, levels, prefix) {
     }
     return returnString;
 }
+
+function formatBytes(a,b){if(0==a)return"0 Bytes";var c=1024,d=b||2,e=["Bytes","KB","MB","GB","TB","PB","EB","ZB","YB"],f=Math.floor(Math.log(a)/Math.log(c));return parseFloat((a/Math.pow(c,f)).toFixed(d))+" "+e[f]}
