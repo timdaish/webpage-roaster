@@ -11,12 +11,15 @@ width: 50%;
     margin: 5px 5px 5px 5px;
     background-color: whitesmoke;
 }
+.selected{
+    background-color: #40da55;
+}
 #summary{
     background-color: #0b2c2a;
     min-height: 100px;
 }
 #detail{
-    background-color: #597977;
+    background-color: #1a524e;
     min-height: 100px;
 }
 #pageselection{
@@ -36,3 +39,36 @@ figure{
 .displayedimage { background-color: #597977; }
 .displayedimage:hover { background-color: red; }
 .displayedimage.green { background-color: white; }
+#statslist{
+    margin-top: 50px;
+    list-style:none;
+    
+}
+#statslist li{
+    float: left;
+    color: #FFF;
+    border:thick rgb(172, 146, 146);
+    padding: 10px;
+    margin: 5px;
+    width: 240px;
+    height: 240px;
+    text-wrap: normal;
+    word-break:break-all;
+    background-color: rgb(35, 70, 146);
+    position: relative;
+}
+.statheadline{
+    position: inherit;
+    display: block;
+    text-align: center;
+    font-size: 32px;
+    word-break:break-word;
+}
+.statvalue{
+    position: inherit;
+    display: block;
+    top: 50px;
+    text-align: center;
+    font-size: 56px;
+    word-break:break-word;
+}
