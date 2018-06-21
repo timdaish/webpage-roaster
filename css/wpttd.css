@@ -3,6 +3,12 @@ body{
     color: white;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
+h1{
+    background-color: whitesmoke;
+    color: black;
+    border-bottom: 2px solid black;
+    font-size: 32px;
+}
 input{
 width: 50%;
 }
@@ -15,8 +21,12 @@ width: 50%;
     background-color: #40da55;
 }
 #summary{
-    background-color: #0b2c2a;
+
     min-height: 100px;
+}
+#test{
+    width: 250px;
+    background-color: #0b2c2a;
 }
 #detail{
     background-color: #1a524e;
@@ -27,6 +37,12 @@ width: 50%;
 }
 table{
     color: black;
+}
+thead{
+    background-color: white;
+}
+.dataTables_wrapper{
+    background-color: white;
 }
 .wrap{
     word-wrap: break-word;
@@ -74,4 +90,13 @@ figure{
 }
 .statvaluesmall{
     font-size: 48px;
+}
+#wpthistory{
+    position: absolute;
+    right: 20px;
+    font-size: 20px;
+    text-decoration: none;
+    color: slateblue;
+    border: 1px  outset slateblue;
+    padding: 5px;
 }

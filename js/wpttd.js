@@ -28,7 +28,7 @@ $( "#optSummary" ).click(function() {
 });    
 $( "#optObjects" ).click(function() {
     // clear results divs
-    clearDivs(false,true);
+    clearDivs(false,true,true);
     displaySection = "objects";
     $( "#optSummary" ).removeClass( "selected" );
     $( "#optObjects" ).addClass( "selected" );
@@ -38,7 +38,7 @@ $( "#optObjects" ).click(function() {
 });
 $( "#optHeaders" ).click(function() {
     // clear results divs
-    clearDivs(false,false,true);
+    clearDivs(false,true,true);
     displaySection = "headers";
     $( "#optSummary" ).removeClass( "selected" );
     $( "#optObjects" ).removeClass( "selected" );
@@ -48,7 +48,7 @@ $( "#optHeaders" ).click(function() {
 });
 $( "#optImages" ).click(function() {
     // clear results divs
-    clearDivs(false,false,true);
+    clearDivs(false,true,true);
     displaySection = "images";
     $( "#optSummary" ).removeClass( "selected" );
     $( "#optObjects" ).removeClass( "selected" );
@@ -181,7 +181,7 @@ function parseHarFileTestResults(harFile)
 //console.log(harFile);
     $.each(harFile, function(key,obj) {
 //console.log(key,obj);
-        console.log(obj.version,obj.browser.name,obj.browser.version);
+//console.log(obj.version,obj.browser.name,obj.browser.version);
         $("#test").append("Browser: " + obj.browser.name + " " + obj.browser.version + "<br/>");
         $.each(obj.pages, function(keyPages,page) {
 //console.log(keyPages,page);
@@ -234,7 +234,7 @@ function parseHarFileSummary(harFile)
                 if(page._Images)
                 {
                     var json = JSON.parse(page._Images);
-                    console.log(json);
+//console.log(json);
                     var noofImages = 0;
                     $.each(json, function() {
                         $.each(this, function(k, v) {
@@ -485,7 +485,7 @@ function viewImagesinTable()
     var filename = getFileName(d[0]);
     var filesize = d[4];
 
-    if(parseInt(filesize.replace(/,/g, '')) > 43)
+    if(parseInt(filesize.replace(/,/g, '')) > 44) // ignore tracking pixels less than 45 bytes
     {
         var imagetoview = document.createElement("figure");
         imagetoview.setAttribute("id", "image_" + d[1]);
