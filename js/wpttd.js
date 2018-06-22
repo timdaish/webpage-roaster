@@ -3,6 +3,7 @@
 var harFile = '';
 var selPageID = 'page_1_0_1';
 var displaySection = 'summary';
+var jobnumber = '';;
 
 // button options
 $( "#sbm" ).click(function() {
@@ -11,9 +12,24 @@ $( "#sbm" ).click(function() {
 //alert( "Handler for .click() called." );
     var wptlink = $('#wptlink').val();
     var test = getWPTResultsID(wptlink);
+    jobnumber = test.testid;
 //console.log ("server", test.serverpath);
 //console.log ("testid", test.testid);
     harFile = getWPTResultsHarFile(test.serverpath, test.testid);
+    // post details for logging
+    $.ajax({
+        url: "xhr_logging.php", 
+        type: "POST",
+        data: { sv: test.serverpath, id : test.testid }
+    })
+    .done(function() {
+    })
+    .fail(function() {
+    //alert( "error logging request " + filename );
+    })
+    .always(function() {
+    //alert( "complete" );
+    });
 });
 
 $( "#optSummary" ).click(function() {
@@ -256,10 +272,10 @@ function parseHarFileSummary(harFile)
 
         // get entry stats
         $.each(obj.entries, function(keyEntries,entries) {
-           // console.log(keyEntries,entries);
+// console.log(keyEntries,entries);
             var contentType = entries._contentType;
 
-           // console.log("summary",entries.startedDateTime,entries._full_url);
+// console.log("summary",entries.startedDateTime,entries._full_url);
 
 
 
@@ -409,7 +425,14 @@ function parseHarFileImages()
         {"label": "#","field":"_index","format": "n"},
         {"label": "URL","field":"_url","format": "wrap"},
         {"label": "Content Type","field":"_contentType","format": "t"},
-        {"label": "Size (bytes)","field":"_objectSize","format": "n,"}
+        {"label": "Format", "pfield":"format" },
+        {"label": "Size (bytes)","field":"_objectSize","format": "n,"},
+        {"label": "Metadata Size (bytes)", "pfield":"metadatabytes" },
+        {"label": "JFIF (bytes)", "pfield":"jfifbytes" },
+        {"label": "EXIF (bytes)", "pfield":"exifbytes" },
+        {"label": "ICC Colour Profile (bytes)", "pfield":"iccbytes" },
+        {"label": "XMP (bytes)", "pfield":"xmpbytes" },
+        {"label": "Comment (bytes)", "pfield":"commentbytes" },
     ];
     // create table header and body
     var header = addTableHeaders(data);
@@ -430,15 +453,20 @@ function parseHarFileImages()
                 "searchable": false
             },
             {
-                "targets": [ 1,2,3,4 ],
+                "targets": [ 1,2,3,4,5,6,7,8],
                 "visible": true,
                 "searchable": true
             }
         ],
         "order": [4, "desc"], // sort by byte size descending
         "dom": '<"top"if>rt<"bottom"lp><"clear">',
+        "iDisplayLength": -1,
         "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]]
     } );
+
+    // read through table, call exiftool and update metadata information
+    extractImageMetadata();
+    //console.log(metadata);
 
     // add view images buttons
     var buttonView = document.createElement("button");
@@ -460,6 +488,12 @@ function parseHarFileImages()
     buttonViewNone.onclick = function() {
         $('#imagesview').empty();
     };
+
+    $('#tableImages').on( 'page.dt', function () {
+       // extractImageMetadata();
+        // var info = table.page.info();
+        // $('#pageInfo').html( 'Showing page: '+info.page+' of '+info.pages );
+    } );
 }
 
 function getFileName(url) {
@@ -500,6 +534,51 @@ function viewImagesinTable()
         $(".displayedimage").click(function () {
             $(this).toggleClass("green");
          });
+}
+
+function extractImageMetadata()
+{
+    var table = $('#tableImages').DataTable();
+    $('#imagesview').empty(); 
+    
+    table.rows({order:'index', search:'applied', selected: false}).every( function () {
+        var d = this.data();
+    
+//console.log(d[0],d[4],parseInt(d[4].replace(/,/g, '')));
+        var filename = getFileName(d[0]);
+        var filepath = d[0];
+        var filenumber = d[1];
+
+        // get image from server
+    
+        // Assign handlers immediately after making the request,
+        // and remember the jqXHR object for this request
+        $.ajax({
+            url: "xhr_extract_image_metadata.php", 
+            type: "POST",
+            data: { jn: jobnumber, fp : filepath, fn: filename, no: filenumber }
+        })
+        .done(function(mdata) {
+            console.log(mdata);
+            // update table with image metadata
+            var rowid = mdata.no.toString();
+            // update table using fnupdate
+            $('#tableImages').dataTable().fnUpdate(mdata.version, $('[data-id=' + rowid + ']'),4); // version 
+            $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.metadatabytes), $('[data-id=' + rowid + ']'),6); // metadata bytes
+            $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.app0jfifbytes), $('[data-id=' + rowid + ']'),7); // jfif bytes
+            $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.app1exifbytes), $('[data-id=' + rowid + ']'),8); // exif bytes
+            $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.app2iccbytes), $('[data-id=' + rowid + ']'),9); // icc bytes
+            $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.xmpbytes), $('[data-id=' + rowid + ']'),10); // xmp bytes
+            $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.commentbytes), $('[data-id=' + rowid + ']'),11); // comment bytes
+        })
+        .fail(function() {
+        //alert( "error processing image " + filename );
+        })
+        .always(function() {
+        //alert( "complete" );
+        });
+    }); 
+    
 }
 
 function addTableHeaders(data,subdata = '')
@@ -585,33 +664,44 @@ console.log(harFile);
                             var prefix = '';
                             var suffix = '';
                             
-                            switch(item.format)
-                            {
-                                case "n,": // numeric with thousands separator
-                                    field += ".toLocaleString('en-GB')";
-                                    break;
-                                case "br":
-//console.log("data formatting adding break",item.field);
-                                    suffix = "<br/>";
-                                    break;
+                            if(!item.field){
+                                // prep for missing field
+                                var pid = "!waiting!";
+                                
+                                rowCell.setAttribute("id",entry._index + item.pfield);
+                                rowCell.appendChild(document.createTextNode(pid));
                             }
-
-                            switch(item.tooltip)
+                            else
                             {
-                                default:
-                                    tooltip = item.label;
-                            }
-                            rowCell.setAttribute("title",tooltip);
-//console.log("field",field);
-                            if(item.format == "wrap")
+                                switch(item.format)
                                 {
-                                    var wrapDiv = document.createElement("div");
-                                    wrapDiv.setAttribute("class", "wrap");
-                                    wrapDiv.appendChild(document.createTextNode(prefix + eval(field) + suffix));
-                                    rowCell.appendChild(wrapDiv);
+                                    case "n,": // numeric with thousands separator
+                                        field += ".toLocaleString('en-GB')";
+                                        break;
+                                    case "br":
+    //console.log("data formatting adding break",item.field);
+                                        suffix = "<br/>";
+                                        break;
                                 }
-                                else
-                                    rowCell.appendChild(document.createTextNode(prefix + eval(field) + suffix));
+
+                                switch(item.tooltip)
+                                {
+                                    default:
+                                        tooltip = item.label;
+                                }
+                                rowCell.setAttribute("title",tooltip);
+                                tr.setAttribute("data-id",entry._index);
+    //console.log("field",field);
+                                if(item.format == "wrap")
+                                    {
+                                        var wrapDiv = document.createElement("div");
+                                        wrapDiv.setAttribute("class", "wrap");
+                                        wrapDiv.appendChild(document.createTextNode(prefix + eval(field) + suffix));
+                                        rowCell.appendChild(wrapDiv);
+                                    }
+                                    else
+                                        rowCell.appendChild(document.createTextNode(prefix + eval(field) + suffix));
+                                }
                             tr.appendChild(rowCell);
 //console.log("appending data rowcell to row");
                         });
