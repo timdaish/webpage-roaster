@@ -47,7 +47,6 @@ thead{
 .wrap{
     word-wrap: break-word;
     white-space: normal;
-    max-width: 200px;
 }
 figure{
     float:left;
