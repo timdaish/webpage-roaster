@@ -426,6 +426,7 @@ function parseHarFileImages()
         {"label": "URL","field":"_url","format": "wrap"},
         {"label": "Content Type","field":"_contentType","format": "t"},
         {"label": "Format", "pfield":"format" },
+        {"label": "Encoding", "pfield":"encoding" },
         {"label": "Size (bytes)","field":"_objectSize","format": "n,"},
         {"label": "Metadata Size (bytes)", "pfield":"metadatabytes" },
         {"label": "JFIF (bytes)", "pfield":"jfifbytes" },
@@ -433,6 +434,10 @@ function parseHarFileImages()
         {"label": "ICC Colour Profile (bytes)", "pfield":"iccbytes" },
         {"label": "XMP (bytes)", "pfield":"xmpbytes" },
         {"label": "Comment (bytes)", "pfield":"commentbytes" },
+        {"label": "PhotoShop Ducky Tag (bytes)", "pfield":"psducky" },
+        {"label": "PhotoShop Tags (bytes)", "pfield":"pstags" },
+        {"label": "PhotoShop Quality", "pfield":"pshopq" },
+        {"label": "GIF Animiation Frame Count", "pfield":"framecount" },
     ];
     // create table header and body
     var header = addTableHeaders(data);
@@ -453,15 +458,16 @@ function parseHarFileImages()
                 "searchable": false
             },
             {
-                "targets": [ 1,2,3,4,5,6,7,8],
+                "targets": [ 1,2,3,4,5,6,7,8,9,10,11,12,13],
                 "visible": true,
                 "searchable": true
             }
         ],
-        "order": [4, "desc"], // sort by byte size descending
+        "order": [6, "desc"], // sort by byte size descending
         "dom": '<"top"if>rt<"bottom"lp><"clear">',
-        "iDisplayLength": -1,
-        "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]]
+        "iDisplayLength": 10,
+        "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+        "autoWidth": false
     } );
 
     // read through table, call exiftool and update metadata information
@@ -469,8 +475,12 @@ function parseHarFileImages()
     //console.log(metadata);
 
     // add view images buttons
+    var buttonMetaData = document.createElement("button");
     var buttonView = document.createElement("button");
     var buttonViewNone = document.createElement("button");
+    buttonMetaData.value = "Get Metadata";
+    buttonMetaData.setAttribute("id", "metadata");
+    buttonMetaData.appendChild(document.createTextNode("Get Metadata"));
     buttonView.value = "View";
     buttonView.setAttribute("id", "viewimages");
     buttonView.appendChild(document.createTextNode("View"));
@@ -478,6 +488,7 @@ function parseHarFileImages()
     buttonViewNone.setAttribute("id", "unviewimages");
     buttonViewNone.appendChild(document.createTextNode("Hide"));
     $("#images").append('<div id="viewbuttons"></div>');
+    $("#viewbuttons").append(buttonMetaData);
     $("#viewbuttons").append(buttonView);
     $("#viewbuttons").append(buttonViewNone);
     $("#images").append('<div id="imagesview"></div>');
@@ -488,9 +499,12 @@ function parseHarFileImages()
     buttonViewNone.onclick = function() {
         $('#imagesview').empty();
     };
+    buttonMetaData.onclick = function() {
+        extractImageMetadata();
+    };
 
     $('#tableImages').on( 'page.dt', function () {
-       // extractImageMetadata();
+        extractImageMetadata();
         // var info = table.page.info();
         // $('#pageInfo').html( 'Showing page: '+info.page+' of '+info.pages );
     } );
@@ -512,12 +526,12 @@ function viewImagesinTable()
     var table = $('#tableImages').DataTable();
     $('#imagesview').empty(); 
     
-    table.rows({order:'index', search:'applied'}).every( function () {
+    table.rows({search:'applied', page: 'current'}).every( function () {
         var d = this.data();
     
-//console.log(d[0],d[4],parseInt(d[4].replace(/,/g, '')));
+console.log(d[0],d[6],parseInt(d[6].replace(/,/g, '')));
     var filename = getFileName(d[0]);
-    var filesize = d[4];
+    var filesize = d[6];
 
     if(parseInt(filesize.replace(/,/g, '')) > 44) // ignore tracking pixels less than 45 bytes
     {
@@ -541,16 +555,19 @@ function extractImageMetadata()
     var table = $('#tableImages').DataTable();
     $('#imagesview').empty(); 
     
-    table.rows({order:'index', search:'applied', selected: false}).every( function () {
+    table.rows({order:'index', search:'applied', page: 'current'}).every( function () {
         var d = this.data();
     
-//console.log(d[0],d[4],parseInt(d[4].replace(/,/g, '')));
+//console.log(d[1],d[0],d[5],parseInt(d[5].replace(/,/g, '')));
         var filename = getFileName(d[0]);
         var filepath = d[0];
         var filenumber = d[1];
+        var mdb = d[7];
 
+        if(mdb == "unread")
+        {
         // get image from server
-    
+        
         // Assign handlers immediately after making the request,
         // and remember the jqXHR object for this request
         $.ajax({
@@ -559,17 +576,30 @@ function extractImageMetadata()
             data: { jn: jobnumber, fp : filepath, fn: filename, no: filenumber }
         })
         .done(function(mdata) {
-            console.log(mdata);
+console.log(mdata);
             // update table with image metadata
             var rowid = mdata.no.toString();
             // update table using fnupdate
-            $('#tableImages').dataTable().fnUpdate(mdata.version, $('[data-id=' + rowid + ']'),4); // version 
-            $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.metadatabytes), $('[data-id=' + rowid + ']'),6); // metadata bytes
-            $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.app0jfifbytes), $('[data-id=' + rowid + ']'),7); // jfif bytes
-            $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.app1exifbytes), $('[data-id=' + rowid + ']'),8); // exif bytes
-            $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.app2iccbytes), $('[data-id=' + rowid + ']'),9); // icc bytes
-            $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.xmpbytes), $('[data-id=' + rowid + ']'),10); // xmp bytes
-            $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.commentbytes), $('[data-id=' + rowid + ']'),11); // comment bytes
+            $('#tableImages').dataTable().fnUpdate(mdata.version, $('[data-id=' + rowid + ']'),4,false); // version 
+            $('#tableImages').dataTable().fnUpdate(mdata.encoding, $('[data-id=' + rowid + ']'),5,false); // encoding
+            // 6 is file size in bytes
+            $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.metadatabytes), $('[data-id=' + rowid + ']'),7,false); // metadata bytes
+            $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.app0jfifbytes), $('[data-id=' + rowid + ']'),8,false); // jfif bytes
+            $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.app1exifbytes), $('[data-id=' + rowid + ']'),9,false); // exif bytes
+            $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.app2iccbytes), $('[data-id=' + rowid + ']'),10,false); // icc bytes
+            $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.xmpbytes), $('[data-id=' + rowid + ']'),11,false); // xmp bytes
+            $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.commentbytes), $('[data-id=' + rowid + ']'),12,false); // comment bytes
+            $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.app12bytes), $('[data-id=' + rowid + ']'),13,false); // app12 ducky tag bytes
+            $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.app13bytes), $('[data-id=' + rowid + ']'),14,false); // app13 photoshop bytes
+            if(mdata.type == "JPEG" && mdata.duckyquality > 0)
+                $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.duckyquality) + "%", $('[data-id=' + rowid + ']'),15,false); // photoshop quality
+            else
+                $('#tableImages').dataTable().fnUpdate( "", $('[data-id=' + rowid + ']'),15,false); // photoshop quality not defined
+            if(mdata.type == "GIF" && mdata.gifframecount > 0)
+                $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.gifframecount), $('[data-id=' + rowid + ']'),16,false); // gif animation frames
+            else
+                $('#tableImages').dataTable().fnUpdate( "", $('[data-id=' + rowid + ']'),16,false); // gif animation frames not defined
+
         })
         .fail(function() {
         //alert( "error processing image " + filename );
@@ -577,6 +607,7 @@ function extractImageMetadata()
         .always(function() {
         //alert( "complete" );
         });
+    }
     }); 
     
 }
@@ -666,7 +697,7 @@ console.log(harFile);
                             
                             if(!item.field){
                                 // prep for missing field
-                                var pid = "!waiting!";
+                                var pid = "unread";
                                 
                                 rowCell.setAttribute("id",entry._index + item.pfield);
                                 rowCell.appendChild(document.createTextNode(pid));
