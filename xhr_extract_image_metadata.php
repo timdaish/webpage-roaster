@@ -50,7 +50,7 @@ function getMetadata($image_file,$no)
     if($OS == "Windows")
         exec($perlbasedir . 'perl tools\ExifToolPerl\exiftool.pl -v ' . $image_file,$res);
     else
-        exec('exiftool -v ' . $image_file,$res);
+        exec('tools\exiftool.pl -v ' . $image_file,$res);
 // debug print
 //print_r ($res);
 
@@ -62,16 +62,20 @@ function getMetadata($image_file,$no)
     $xmpBytes = 0;
     $jpegcommentBytes = 0;
     $commentBytes = 0;
-    $jpegPhotoShopBytes = 0;
     $iccColourProfileBytes = 0;
     $metadatabytes = 0;
     $jpegApp0Bytes = 0;
     $jpegApp1Bytes = 0;
     $jpegApp1XMPBytes = 0;
     $jpegApp1ExifBytes = 0;
+    $jpegApp12Bytes = 0;
+    $jpegApp13Bytes = 0;
     $jpegApp1 = false;
+    $jpegApp12 = false;
     $pngtextBytes = 0;
     $gifFrameCount = 0;
+    $jpegApp12Quality = 0;
+    $encodingMethod = '';
     //parse metadata verbose output
     foreach($res as $item) {
         // to know what's in $item
@@ -105,14 +109,6 @@ function getMetadata($image_file,$no)
             } // end switch
         }
         // look for metadata sizes
-        if(strpos($lineparts[0],"XMP directory") !== false)
-        {
-            // xmp metadata
-            $xmpBytes = getBetween($lineparts[0],", "," bytes");
-            $metadatabytes += intval($xmpBytes);
-            $debug .= ";XMP " . $xmpBytes;
-//echo "XMP metadata found " . $xmpBytes .PHP_EOL;
-        }
         if(strpos($lineparts[0],"JPEG COM") !== false)
         {
             // jpeg xmp metadata
@@ -132,7 +128,7 @@ function getMetadata($image_file,$no)
         }
         if(strpos($lineparts[0],"JFIFVersion") !== false and $jpegApp0 == true)
         {
-            $version = "JFIF " . str_replace(" ",".",$lineparts[1]);
+            $version = "JFIF " . str_replace(" ",".0",$lineparts[1]);
         }
         if(strpos($lineparts[0],"JPEG APP1 ") !== false)
         {
@@ -140,7 +136,7 @@ function getMetadata($image_file,$no)
             $jpegApp1 = true;
             $jpegApp1Bytes = getBetween($lineparts[0],"("," bytes");
         }
-        if(strpos($lineparts[0],"XMP Directory") !== false and $jpegApp1 == true)
+        if(strpos($lineparts[0],"XMP directory") !== false and $jpegApp1 == true)
         {
             // jpeg xmp metadata
             $jpegApp1 = false;
@@ -149,6 +145,15 @@ function getMetadata($image_file,$no)
             $debug .= ";JPEG APP1 XMP " . $jpegApp1Bytes;
 // echo "JPEG APP1 XMP metadata found " . $jpegApp1Bytes .PHP_EOL;
         }
+        else
+            if(strpos($lineparts[0],"XMP directory") !== false)
+            {
+                // xmp metadata
+                $xmpBytes = getBetween($lineparts[0],", "," bytes");
+                $metadatabytes += intval($xmpBytes);
+                $debug .= ";XMP " . $xmpBytes;
+    //echo "XMP metadata found " . $xmpBytes .PHP_EOL;
+            }
         if(strpos($lineparts[0],"ExifByteOrder") !== false and $jpegApp1 == true)
         {
             // jpeg exif metadata
@@ -166,22 +171,38 @@ function getMetadata($image_file,$no)
             $debug .= ";JPEG APP2 ICC Colour Profile " . $iccColourProfileBytes;
 //echo "JPEG APP2 metadata found ". $iccColourProfileBytes .PHP_EOL;
         }
-//echo "checking for JPEG APP13 IPTC metadata found - " . strpos($lineparts[0],"JPEG APP13") . ";".PHP_EOL;
-        if(strpos($lineparts[0],"ICC_Profile directory") !== false)
+        if(strpos($lineparts[0],"JPEG APP12") !== false)
         {
-            // jpeg iptc metadata
+            // jpeg app13 ducky tag metadata
+            $jpegApp12Bytes = getBetween($lineparts[0],"("," bytes");
+            $metadatabytes += intval($jpegApp12Bytes);
+            $debug .= ";JPEG APP12 Photoshop " . $jpegApp12Bytes;
+            $jpegApp12 = true;
+//echo "JPEG APP12 metadata found ". $jpegApp12Bytes .PHP_EOL;
+        }
+        if(strpos($lineparts[0],"Quality") !== false and $jpegApp12 == true)
+        {
+            // jpeg exif metadata
+            $jpegApp12 = false;
+            $jpegApp12Quality = intval(ord($lineparts[1]));
+
+//echo "JPEG APP1 Exif metadata found ". $jpegApp1Bytes .PHP_EOL;
+        }
+        if(strpos($lineparts[0],"JPEG APP13") !== false)
+        {
+            // jpeg app13 colour profile metadata
+            $jpegApp13Bytes = getBetween($lineparts[0],"("," bytes");
+            $metadatabytes += intval($jpegApp13Bytes);
+            $debug .= ";JPEG APP13 Photoshop " . $jpegApp13Bytes;
+//echo "JPEG APP13 metadata found ". $jpegApp13Bytes .PHP_EOL;
+        }
+        if($fileType != "JPEG" and strpos($lineparts[0],"ICC_Profile directory") !== false)
+        {
+            // icc metadata
             $iccColourProfileBytes = getBetween($lineparts[0],", "," bytes");
             $metadatabytes += intval($iccColourProfileBytes);
-            $debug .= ";GIF ICC colour profile " . $iccColourProfileBytes;
+            $debug .= ";ICC colour profile " . $iccColourProfileBytes;
 //echo "GIF ICC colour profile metadata found ". $iccColourProfileBytes .PHP_EOL;
-        }
-        if(strpos($lineparts[0],"JPEG APP2") !== false)
-        {
-            // jpeg icc colour profile metadata
-            $iccColourProfileBytes = getBetween($lineparts[0],"("," bytes");
-            $metadatabytes += intval($iccColourProfileBytes);
-            $debug .= ";JPEG APP2 ICC Colour Profile " . $iccColourProfileBytes;
-//echo "JPEG APP2 metadata found ". $iccColourProfileBytes .PHP_EOL;
         }
         if(strpos($lineparts[0],"PNG tEXt") !== false)
         {
@@ -191,6 +212,62 @@ function getMetadata($image_file,$no)
             $debug .= ";PNG Text " . $pngtextBytes;
 //echo "PNG Text metadata found ". $pngtextBytes .PHP_EOL;
         }
+
+        // get encoding
+        if($fileType == "JPEG" and strpos($lineparts[0],"EncodingProcess") !== false)
+        {
+            // jpeg  encoding
+            $jpegencoding = $lineparts[1];
+            $debug .= ";JPEG encoding " . $jpegencoding;
+            switch($jpegencoding)
+            {
+                case 0:
+                    $encodingMethod = "Baseline DCT, Huffman coding"; 
+                    break;
+                case 1: 
+                    $encodingMethod = "Extended sequential DCT, Huffman coding"; 
+                    break;
+                case 2:
+                    $encodingMethod = "Progressive DCT, Huffman coding";
+                    break;
+                case 3:
+                    $encodingMethod = "Lossless, Huffman coding";
+                    break;
+                case 5: 
+                    $encodingMethod = "Sequential DCT, differential Huffman coding"; 
+                    break;
+                case 6:
+                    $encodingMethod =  "Progressive DCT, differential Huffman coding"; 
+                    break;
+                case 7:
+                    $encodingMethod =  "Lossless, Differential Huffman coding"; 
+                    break;
+                case 9:
+                    $encodingMethod = "Extended sequential DCT, arithmetic coding";
+                    break; 
+                case 10:
+                    $encodingMethod = "Progressive DCT, arithmetic coding";
+                    break; 
+                case  11:
+                    $encodingMethod = "Lossless, arithmetic coding";
+                    break;
+                case 13:
+                    $encodingMethod = "Sequential DCT, differential arithmetic coding";
+                    break; 
+                case 14:
+                    $encodingMethod = "Progressive DCT, differential arithmetic coding";
+                    break;
+                case 15: 
+                    $encodingMethod = "Lossless, differential arithmetic coding";
+                    break;
+            }
+
+//echo "JPEG encoding found ". $pngtextBytes .PHP_EOL;
+        }
+        else 
+            if($fileType == "GIF")
+                $encodingMethod = "LZW";
+
     }
 
     // consolidate common attributes
@@ -215,10 +292,13 @@ function getMetadata($image_file,$no)
      "app1exifbytes" => $jpegApp1ExifBytes,
      "app1xmpbytes" => $jpegApp1XMPBytes,
      "app2iccbytes" => $iccColourProfileBytes,
-     "app13iptcbytes" => $jpegPhotoShopBytes,
+     "app12bytes" => $jpegApp12Bytes,
+     "app13bytes" => $jpegApp13Bytes,
      "xmpbytes" =>  $xmpBytes,
      "commentbytes" => $commentBytes,
      "gifframecount" => $gifFrameCount,
+     "duckyquality" => $jpegApp12Quality,
+     "encoding" => $encodingMethod,
      "debug" => $debug
     );
 
