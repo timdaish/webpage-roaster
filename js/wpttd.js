@@ -3,15 +3,27 @@
 var harFile = '';
 var selPageID = 'page_1_0_1';
 var displaySection = 'summary';
-var jobnumber = '';;
+var jobnumber = '';
+var noofPages = 0;
+var noofSteps = 0;
+var noofRuns = 0;
+var fvonly = true;
 
 // button options
 $( "#sbm" ).click(function() {
     // clear results divs
+    $( "#summary" ).show();
     $("#selPages").empty();
+    $("#test").empty();
+    noofPages = 0;
+    noofSteps = 0;
+    noofRuns = 0;
+    fvonly = true;
     clearDivs(true,true,true);
 //alert( "Handler for .click() called." );
     var wptlink = $('#wptlink').val();
+    // if(wptlink.slice(-1) != "/")
+    //     wptlink = wptlink + "/";
     var test = getWPTResultsID(wptlink);
     jobnumber = test.testid;
 //console.log ("server", test.serverpath);
@@ -41,6 +53,7 @@ $( "#optSummary" ).click(function() {
     $( "#optObjects" ).removeClass( "active" );
     $( "#optHeaders" ).removeClass( "active" );
     $( "#optImages" ).removeClass( "active" );
+    $( "#summary" ).show();
     parseHarFileSummary(harFile);
 });    
 $( "#optObjects" ).click(function() {
@@ -51,6 +64,7 @@ $( "#optObjects" ).click(function() {
     $( "#optObjects" ).addClass( "active" );
     $( "#optHeaders" ).removeClass( "active" );
     $( "#optImages" ).removeClass( "active" );
+    $( "#summary" ).hide();
     parseHarFileObjects();
 });
 $( "#optHeaders" ).click(function() {
@@ -61,6 +75,7 @@ $( "#optHeaders" ).click(function() {
     $( "#optObjects" ).removeClass( "active" );
     $( "#optHeaders" ).addClass( "active" );
     $( "#optImages" ).removeClass( "active" );
+    $( "#summary" ).hide();
     parseHarFileHeaders();
 });
 $( "#optImages" ).click(function() {
@@ -71,13 +86,14 @@ $( "#optImages" ).click(function() {
     $( "#optObjects" ).removeClass( "active" );
     $( "#optHeaders" ).removeClass( "active" );
     $( "#optImages" ).addClass( "active" );
+    $( "#summary" ).hide();
     parseHarFileImages();
 });
 $( "#selPages" ).change(function() {
     //alert( "Handler for .change() called." );
     //var end = this.value;
     clearDivs(false,true,true);
-    selPageID = $('#selPages').val();  
+    selPageID = $('#selPages').val();
 console.log("active page id: ", selPageID);
 
     switch (displaySection)
@@ -87,6 +103,7 @@ console.log("active page id: ", selPageID);
             $( "#optObjects" ).removeClass( "active" );
             $( "#optHeaders" ).removeClass( "active" );
             $( "#optImages" ).removeClass( "active" );
+            $( "#summary" ).show();
             parseHarFilePage(harFile);
             parseHarFileSummary(harFile);
             break;
@@ -95,6 +112,7 @@ console.log("active page id: ", selPageID);
             $( "#optObjects" ).addClass( "active" );
             $( "#optHeaders" ).removeClass( "active" );
             $( "#optImages" ).removeClass( "active" );
+            $( "#summary" ).hide();
             parseHarFilePage(harFile);
             parseHarFileObjects();
             break;
@@ -103,6 +121,7 @@ console.log("active page id: ", selPageID);
             $( "#optObjects" ).removeClass( "active" );
             $( "#optHeaders" ).addClass( "active" );
             $( "#optImages" ).removeClass( "active" );
+            $( "#summary" ).hide();
             parseHarFilePage(harFile);
             parseHarFileHeaders()
             break;
@@ -111,6 +130,7 @@ console.log("active page id: ", selPageID);
             $( "#optObjects" ).removeClass( "active" );
             $( "#optHeaders" ).removeClass( "active" );
             $( "#optImages" ).addClass( "active" );
+            $( "#summary" ).hide();
             parseHarFilePage(harFile);
             parseHarFileImages()
             break;
@@ -151,8 +171,8 @@ console.log ("getting results ID for " + wptlink);
         testid = testid.substring(0,testid.length-1);
     }
 // function debug
-// console.log ("server", serverpath);
-// console.log ("testid", testid);
+//console.log ("server", serverpath);
+//console.log ("testid", testid);
     return {serverpath: serverpath, testid: testid};
 }
 
@@ -162,7 +182,7 @@ function getWPTResultsHarFile(server,id)
     // Assign handlers immediately after making the request,
     // and remember the jqxhr object for this request
     var jqxhr = $.get( pathHarFile, function() {
-        console.log(pathHarFile)
+console.log(pathHarFile)
     //  alert( "sent success" );
     })
         .done(function(dataHarFile) {
@@ -189,15 +209,11 @@ function getWPTResultsHarFile(server,id)
 
 function parseHarFileTestResults(harFile)
 {
-    var noofPages = 0;
-    var noofSteps = 0;
-    var noofRuns = 0;
     // prepare divs
     $( "#optSummary" ).addClass( "active" );
     $( "#optObjects" ).removeClass( "active" );
     $( "#optHeaders" ).removeClass( "active" );
     $( "#optImages" ).removeClass( "active" );
-    
 //console.log(harFile);
     $.each(harFile, function(key,obj) {
 //console.log(key,obj);
@@ -209,6 +225,8 @@ function parseHarFileTestResults(harFile)
                 noofRuns = page._run;
                 if(page._step > noofSteps)
                 noofSteps = page._step;
+            if(page._cached == 1)
+                fvonly = false;
             // append page ids to dropdown
             $("#selPages").append($('<option></option>').val(page.id).html(page._URL));
         }); // end pages
@@ -216,6 +234,10 @@ function parseHarFileTestResults(harFile)
         $("#test").append('<span class="testinfo">Number of Pages Tested: ' + noofPages+ '</span>');
         $("#test").append('<span class="testinfo">Number of Steps: ' + noofSteps+ '</span>');
         $("#test").append('<span class="testinfo">Number of Runs: ' + noofRuns+ '</span>');
+        if(fvonly == true)
+            $("#test").append('<span class="testinfo">First View only</span>');
+        else
+            $("#test").append('<span class="testinfo">First and Repeat View</span>');
 
     }); // end log
     parseHarFilePage(harFile);
@@ -233,7 +255,7 @@ function parseHarFilePage(harFile)
             {
 //console.log("page matched", page.id);
                 // extract page summary information
-console.log(page);
+//console.log(page);
             $("#pagename").text(page.title);
             }
         });
@@ -256,10 +278,14 @@ function parseHarFileSummary(harFile)
                 // extract page summary information
 console.log(page);
                 // get page stats
+                // if(noofRuns > 1)
+                //     addStat(statsList,"Run No.","",page._run,"","");
+                // if(noofSteps > 1)
+                //     addStat(statsList,"Step No.","",page._step,"","");
                 addStat(statsList,"Total Page Size","",formatBytes(page._bytesIn),"","")
                 addStat(statsList,"No. of Requests","",page._requests,"","")
-                addStat(statsList,"Speed Index","",page._SpeedIndex,"","")
                 addStat(statsList,"Render Start","",page.pageTimings._startRender/1000,"s","")
+                addStat(statsList,"Speed Index","",page._SpeedIndex,"","")
                 //addStat(statsList,"Base CDN","",page._base_page_cdn,"","");
                 $.each(page._detected, function(kd,kditem) {
 //console.log(kd,kditem);
@@ -356,7 +382,7 @@ function parseHarFileObjects()
     $("#detail").append('<div id="' + tableType + '"></div>');
     // define table data
     data = [{"label": "Full URL","field":"_full_url","format": "hidden"},
-        {"label": "#","field":"_index","format": "n"},
+        {"label": "#","field":"_number","format": "n"},
         {"label": "host","field":"_host","format": "t"},
         {"label": "URL","field":"_url","format": "wrap"},
         {"label": "Content Type","field":"_contentType","format": "t"},
@@ -398,7 +424,7 @@ function parseHarFileHeaders()
     $("#detail").append('<div id="' + tableType + '"></div>');
     // define table data
     data = [{"label": "Full URL","field":"_full_url","format": "hidden"},
-        {"label": "#","field":"_index","format": "n"},
+        {"label": "#","field":"_number","format": "n"},
         {"label": "host","field":"_host","format": "t"},
         {"label": "URL","field":"_url","format": "wrap"},
     ];
@@ -463,7 +489,7 @@ function parseHarFileImages()
     $("#detail").append('<div id="' + tableType + '"></div>');
     // define table data
     data = [{"label": "Full URL","field":"_full_url","format": "hidden"},
-        {"label": "#","field":"_index","format": "n"},
+        {"label": "#","field":"_number","format": "n"},
         {"label": "URL","field":"_url","format": "wrap"},
         {"label": "Content Type","field":"_contentType","format": "t"},
         {"label": "Format", "pfield":"format" },
@@ -478,6 +504,7 @@ function parseHarFileImages()
         {"label": "PhotoShop Ducky Tag (bytes)", "pfield":"psducky" },
         {"label": "PhotoShop Tags (bytes)", "pfield":"pstags" },
         {"label": "PhotoShop Quality", "pfield":"pshopq" },
+        {"label": "Esimated JPEG Quality", "pfield":"jpegq" },
         {"label": "GIF Animiation Frame Count", "pfield":"framecount" },
     ];
     // create table header and body
@@ -499,7 +526,7 @@ function parseHarFileImages()
                 "searchable": false
             },
             {
-                "targets": [ 1,2,3,4,5,6,7,8,9,10,11,12,13],
+                "targets": [ 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],
                 "visible": true,
                 "searchable": true
             }
@@ -570,7 +597,7 @@ function viewImagesinTable()
     table.rows({search:'applied', page: 'current'}).every( function () {
         var d = this.data();
     
-console.log(d[0],d[6],parseInt(d[6].replace(/,/g, '')));
+//console.log(d[0],d[6],parseInt(d[6].replace(/,/g, '')));
     var filename = getFileName(d[0]);
     var filesize = d[6];
 
@@ -617,11 +644,12 @@ function extractImageMetadata()
             data: { jn: jobnumber, fp : filepath, fn: filename, no: filenumber }
         })
         .done(function(mdata) {
-console.log(mdata);
+//console.log(mdata);
             // update table with image metadata
             var rowid = mdata.no.toString();
             // update table using fnupdate
-            $('#tableImages').dataTable().fnUpdate(mdata.version, $('[data-id=' + rowid + ']'),4,false); // version 
+            $('#tableImages').dataTable().fnUpdate(mdata.mimeType, $('[data-id=' + rowid + ']'),3,false); // mime type 
+            $('#tableImages').dataTable().fnUpdate(mdata.version, $('[data-id=' + rowid + ']'),4,false); // format version 
             $('#tableImages').dataTable().fnUpdate(mdata.encoding, $('[data-id=' + rowid + ']'),5,false); // encoding
             // 6 is file size in bytes
             $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.metadatabytes), $('[data-id=' + rowid + ']'),7,false); // metadata bytes
@@ -636,10 +664,14 @@ console.log(mdata);
                 $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.duckyquality) + "%", $('[data-id=' + rowid + ']'),15,false); // photoshop quality
             else
                 $('#tableImages').dataTable().fnUpdate( "", $('[data-id=' + rowid + ']'),15,false); // photoshop quality not defined
-            if(mdata.type == "GIF" && mdata.gifframecount > 0)
-                $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.gifframecount), $('[data-id=' + rowid + ']'),16,false); // gif animation frames
+            if(mdata.type == "JPEG")
+                $('#tableImages').dataTable().fnUpdate(mdata.jpegestquality, $('[data-id=' + rowid + ']'),16,false); // photoshop quality
             else
-                $('#tableImages').dataTable().fnUpdate( "", $('[data-id=' + rowid + ']'),16,false); // gif animation frames not defined
+                $('#tableImages').dataTable().fnUpdate( "", $('[data-id=' + rowid + ']'),16,false); // esimated quality not defined
+            if(mdata.type == "GIF" && mdata.gifframecount > 0)
+                $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.gifframecount), $('[data-id=' + rowid + ']'),17,false); // gif animation frames
+            else
+                $('#tableImages').dataTable().fnUpdate( "", $('[data-id=' + rowid + ']'),17,false); // gif animation frames not defined
 
         })
         .fail(function() {
@@ -705,7 +737,7 @@ function addTableBody(data,cType,subDataType = '',subdata = '')
 
     var body = document.createElement("tbody");
 
-console.log(harFile);
+//console.log(harFile);
         $.each(harFile, function(key,obj) {
     //     $.each(obj.pages, function(keyPages,page) {
     //         if (page.id == selPageID)
@@ -732,7 +764,11 @@ console.log(harFile);
 //console.log("body data",item.label,item.field);
                             var rowCell = document.createElement("td");
                             var tooltip = '';
-                            var field = "entry." + item.field;
+                            var field = '';
+                            if(item.field)
+                                field = "entry." + item.field;
+                            else
+                                field = '';
                             var prefix = '';
                             var suffix = '';
                             
@@ -740,7 +776,7 @@ console.log(harFile);
                                 // prep for missing field
                                 var pid = "unread";
                                 
-                                rowCell.setAttribute("id",entry._index + item.pfield);
+                                rowCell.setAttribute("id",entry._number + item.pfield);
                                 rowCell.appendChild(document.createTextNode(pid));
                             }
                             else
@@ -762,7 +798,7 @@ console.log(harFile);
                                         tooltip = item.label;
                                 }
                                 rowCell.setAttribute("title",tooltip);
-                                tr.setAttribute("data-id",entry._index);
+                                tr.setAttribute("data-id",entry._number);
     //console.log("field",field);
                                 if(item.format == "wrap")
                                     {
@@ -782,6 +818,7 @@ console.log(harFile);
                         if(subDataType != '')
                         {
 //console.log("processing entry subdata for " + subDataType);
+
                                 $.each(subdata, function(sd, sditem) {
 //console.log("checking subdata",sd, sditem);
                     
@@ -792,13 +829,17 @@ console.log(harFile);
                                     prefix = '';
                                     suffix = ''
                                     var paraHTML = '';
-                                    // iterate through each of the subdatatypes
+                                    
+                                    // iterate through each of the subdatatypes and headers
                                     $.each(eval("entry." + subDataType), function(sdata, sdataitem) {
 //console.log(sdata, sdataitem);
+
                                         field = sdataitem.value;
+
                                         paraHTML = '';
                                         prefix = '';
                                         suffix = '';
+
                                         if(sdataitem.name.toLowerCase() == dataToFind)
                                         {
                                             found = true;
@@ -862,7 +903,22 @@ console.log(harFile);
                                         }
                                     });
                                     if(found == false)
-                                        rowCell.appendChild(document.createTextNode("-"))
+                                    {
+                                        // override if required
+                                        switch (sditem.label)
+                                        {
+//                                             case "Status":
+// //console.log(status,eval(entry.response.status));
+//                                                 rowCell.appendChild(document.createTextNode(eval(entry.response.status)));
+//                                                 break;
+//                                             case "Content Length (bytes)":
+//                                                 rowCell.appendChild(document.createTextNode(formatNumber(eval(entry.response.bodySize))));
+//                                                 break;
+                                            default:
+                                            rowCell.appendChild(document.createTextNode("-"));
+                                        }
+                                        
+                                    }
 //console.log("appending subdata rowcell to row");
                                     tr.appendChild(rowCell);
                                 });

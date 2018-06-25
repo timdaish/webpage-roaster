@@ -65,6 +65,7 @@ width: 400px;
 #containerjobsel{
     background-color: #dbe6e9;
     color: navy;
+    margin-top: 3px;
 }
 .jobseldata{
     float: left;
@@ -75,6 +76,10 @@ width: 400px;
     background-color: whitesmoke;
     color: navy;
 }
+#sbm{
+    background-color: #04b42a;
+    color: white;
+}
 #summary{
     background-color: #0b023f;
     min-height: 100px;
@@ -84,7 +89,9 @@ width: 400px;
     font-size: 80%;
 }
 .testinfo{
-    padding: 0px 20px 0px 10px;
+    padding: 0px 5px 0px 5px;
+    border-left: 1px black solid;
+    border-right: 1px black solid;
 }
 #detail{
     background-color: #0b023f;

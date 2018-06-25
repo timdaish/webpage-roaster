@@ -15,12 +15,13 @@ if (!file_exists($filepath_savedir)) {
 //echo "creating dir: " . $filepath_savedir . PHP_EOL;
 }
 $savepath = joinFilePaths($filepath_savedir,$no . "_" . $fn);
+$savepathanalysis = joinFilePaths($filepath_savedir,$no . "_" . "etanalysis.txt");
 //echo "saving image to " . $savepath . PHP_EOL;
 if (!file_exists($savepath))
     download_image($fp, $savepath);
 
 if (file_exists($savepath))
-    $metadata = getMetadata($savepath,$no);
+    $metadata = getMetadata($savepath,$no,$savepathanalysis);
 
 // output the metadata array as JSON
 echo (json_encode($metadata));
@@ -42,7 +43,7 @@ function download_image($image_url, $image_file){
   fclose($fp);                                  // closing file handle
 }
 
-function getMetadata($image_file,$no)
+function getMetadata($image_file,$no,$analysis_file)
 {
     global $OS,$perlbasedir;
     // call exiftool perl
@@ -53,6 +54,9 @@ function getMetadata($image_file,$no)
         exec('./tools/ExifTool/exiftool -v ' . $image_file,$res);
 // debug print
 //print_r ($res);
+
+// Write the contents to the file
+file_put_contents($analysis_file, $res);
 
     // initialise vars
     $version = '';
@@ -75,7 +79,9 @@ function getMetadata($image_file,$no)
     $pngtextBytes = 0;
     $gifFrameCount = 0;
     $jpegApp12Quality = 0;
+    $webpencoding = "VP8";
     $encodingMethod = '';
+    $jpegestquality = 0;
     //parse metadata verbose output
     foreach($res as $item) {
         // to know what's in $item
@@ -267,15 +273,44 @@ function getMetadata($image_file,$no)
         else 
             if($fileType == "GIF")
                 $encodingMethod = "LZW";
+                else 
+                if($fileType == "PNG")
+                    $encodingMethod = "Deflate";
+                else 
+                    if($fileType == "WEBP")
+                    {
+                        if(strpos($lineparts[0],"RIFF 'VP8L") !== false)
+                            $webpencoding = "VP8 Lossless";
+                    }
+    } // end foreach item
 
-    }
-
-    // consolidate common attributes
+    // consolidate common attributes and do extra quality checks
     switch($fileType)
     {
         case "JPEG":
             $commentBytes = $jpegcommentBytes;
             $xmpBytes = $jpegApp1XMPBytes + $xmpBytes;
+
+            // estimate quality
+            $res = array();
+            if($OS == "Windows")
+                exec('tools\jpegquality '. $image_file,$qres);
+            else
+                exec('./tools/jpegq '. $image_file,$qres);
+            $resstr = implode($qres);
+            if(strpos($resstr,'%'))
+            {
+                if(intval($resstr>0))
+                $jpegestquality = $resstr;
+                else
+                    $jpegestquality = 'Low';
+            }
+            else
+            {
+                $jpegestquality = 'N/A';
+            }
+            //echo ("Estimated quality ". $estquality . "($resstr) for ". $lfn."<br/>");
+
             break;
         case "PNG":
             $commentBytes = $pngtextBytes;
@@ -286,7 +321,7 @@ function getMetadata($image_file,$no)
             break;
     }
 
-    $arr = array('no' => $no, 'type' => $fileType, 'version' => $version,
+    $arr = array('no' => $no, 'type' => $fileType, 'version' => $version, 'mimeType' => $mimeType,
      'metadatabytes' => $metadatabytes,
      "app0jfifbytes" => $jpegApp0Bytes,
      "app1exifbytes" => $jpegApp1ExifBytes,
@@ -299,6 +334,7 @@ function getMetadata($image_file,$no)
      "gifframecount" => $gifFrameCount,
      "duckyquality" => $jpegApp12Quality,
      "encoding" => $encodingMethod,
+     "jpegestquality" => $jpegestquality,
      "debug" => $debug
     );
 
