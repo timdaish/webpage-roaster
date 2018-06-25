@@ -20,8 +20,8 @@ if ($OS == "Windows")
 }
 else
 {
-    $cookie_jar = tempnam("/usr/local/", "cky");
-    $drv = '/usr/local';
+    //$cookie_jar = tempnam("/var/sites/w/webpageroaster.com/", "cky");
+    $drv = '/var/sites/w/webpageroaster.com';
     $filepath_basesavedir = $drv . "/roast/";
 }
 function joinFilePaths()
