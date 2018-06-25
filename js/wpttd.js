@@ -8,6 +8,7 @@ var jobnumber = '';;
 // button options
 $( "#sbm" ).click(function() {
     // clear results divs
+    $("#selPages").empty();
     clearDivs(true,true,true);
 //alert( "Handler for .click() called." );
     var wptlink = $('#wptlink').val();
@@ -34,78 +35,83 @@ $( "#sbm" ).click(function() {
 
 $( "#optSummary" ).click(function() {
     // clear results divs
-    clearDivs(false,true,true);
+    clearDivs(true,true,true);
     displaySection = "summary";
-    $( "#optSummary" ).addClass( "selected" );
-    $( "#optObjects" ).removeClass( "selected" );
-    $( "#optHeaders" ).removeClass( "selected" );
-    $( "#optImages" ).removeClass( "selected" );
+    $( "#optSummary" ).addClass( "active" );
+    $( "#optObjects" ).removeClass( "active" );
+    $( "#optHeaders" ).removeClass( "active" );
+    $( "#optImages" ).removeClass( "active" );
     parseHarFileSummary(harFile);
 });    
 $( "#optObjects" ).click(function() {
     // clear results divs
     clearDivs(false,true,true);
     displaySection = "objects";
-    $( "#optSummary" ).removeClass( "selected" );
-    $( "#optObjects" ).addClass( "selected" );
-    $( "#optHeaders" ).removeClass( "selected" );
-    $( "#optImages" ).removeClass( "selected" );
+    $( "#optSummary" ).removeClass( "active" );
+    $( "#optObjects" ).addClass( "active" );
+    $( "#optHeaders" ).removeClass( "active" );
+    $( "#optImages" ).removeClass( "active" );
     parseHarFileObjects();
 });
 $( "#optHeaders" ).click(function() {
     // clear results divs
     clearDivs(false,true,true);
     displaySection = "headers";
-    $( "#optSummary" ).removeClass( "selected" );
-    $( "#optObjects" ).removeClass( "selected" );
-    $( "#optHeaders" ).addClass( "selected" );
-    $( "#optImages" ).removeClass( "selected" );
+    $( "#optSummary" ).removeClass( "active" );
+    $( "#optObjects" ).removeClass( "active" );
+    $( "#optHeaders" ).addClass( "active" );
+    $( "#optImages" ).removeClass( "active" );
     parseHarFileHeaders();
 });
 $( "#optImages" ).click(function() {
     // clear results divs
     clearDivs(false,true,true);
     displaySection = "images";
-    $( "#optSummary" ).removeClass( "selected" );
-    $( "#optObjects" ).removeClass( "selected" );
-    $( "#optHeaders" ).removeClass( "selected" );
-    $( "#optImages" ).addClass( "selected" );
+    $( "#optSummary" ).removeClass( "active" );
+    $( "#optObjects" ).removeClass( "active" );
+    $( "#optHeaders" ).removeClass( "active" );
+    $( "#optImages" ).addClass( "active" );
     parseHarFileImages();
 });
 $( "#selPages" ).change(function() {
     //alert( "Handler for .change() called." );
     //var end = this.value;
     clearDivs(false,true,true);
-    selPageID = $('#selPages').val();
-console.log("selected page id: ", selPageID);
+    selPageID = $('#selPages').val();  
+console.log("active page id: ", selPageID);
+
     switch (displaySection)
     {
         case "summary":
-            $( "#optSummary" ).addClass( "selected" );
-            $( "#optObjects" ).removeClass( "selected" );
-            $( "#optHeaders" ).removeClass( "selected" );
-            $( "#optImages" ).removeClass( "selected" );
-            parseHarFileSummary(harFile)
+            $( "#optSummary" ).addClass( "active" );
+            $( "#optObjects" ).removeClass( "active" );
+            $( "#optHeaders" ).removeClass( "active" );
+            $( "#optImages" ).removeClass( "active" );
+            parseHarFilePage(harFile);
+            parseHarFileSummary(harFile);
             break;
         case "objects":
-            $( "#optSummary" ).removeClass( "selected" );
-            $( "#optObjects" ).addClass( "selected" );
-            $( "#optHeaders" ).removeClass( "selected" );
-            $( "#optImages" ).removeClass( "selected" );
-            parseHarFileObjects()
+            $( "#optSummary" ).removeClass( "active" );
+            $( "#optObjects" ).addClass( "active" );
+            $( "#optHeaders" ).removeClass( "active" );
+            $( "#optImages" ).removeClass( "active" );
+            parseHarFilePage(harFile);
+            parseHarFileObjects();
             break;
         case "headers":
-            $( "#optSummary" ).removeClass( "selected" );
-            $( "#optObjects" ).removeClass( "selected" );
-            $( "#optHeaders" ).addClass( "selected" );
-            $( "#optImages" ).removeClass( "selected" );
+            $( "#optSummary" ).removeClass( "active" );
+            $( "#optObjects" ).removeClass( "active" );
+            $( "#optHeaders" ).addClass( "active" );
+            $( "#optImages" ).removeClass( "active" );
+            parseHarFilePage(harFile);
             parseHarFileHeaders()
             break;
         case "images":
-            $( "#optSummary" ).removeClass( "selected" );
-            $( "#optObjects" ).removeClass( "selected" );
-            $( "#optHeaders" ).removeClass( "selected" );
-            $( "#optImages" ).addClass( "selected" );
+            $( "#optSummary" ).removeClass( "active" );
+            $( "#optObjects" ).removeClass( "active" );
+            $( "#optHeaders" ).removeClass( "active" );
+            $( "#optImages" ).addClass( "active" );
+            parseHarFilePage(harFile);
             parseHarFileImages()
             break;
         }
@@ -116,7 +122,6 @@ function clearDivs(job,test,detail)
     if(job == true)
     {
         $("#summary").empty();
-        $("#selPages").empty();
     }
     if(test == true)
         $("#pagesummary").empty();
@@ -188,17 +193,15 @@ function parseHarFileTestResults(harFile)
     var noofSteps = 0;
     var noofRuns = 0;
     // prepare divs
-    $("#summary").append('<div id="test"></div>');
-    $( "#optSummary" ).addClass( "selected" );
-    $( "#optObjects" ).removeClass( "selected" );
-    $( "#optHeaders" ).removeClass( "selected" );
-    $( "#optImages" ).removeClass( "selected" );
+    $( "#optSummary" ).addClass( "active" );
+    $( "#optObjects" ).removeClass( "active" );
+    $( "#optHeaders" ).removeClass( "active" );
+    $( "#optImages" ).removeClass( "active" );
     
 //console.log(harFile);
     $.each(harFile, function(key,obj) {
 //console.log(key,obj);
 //console.log(obj.version,obj.browser.name,obj.browser.version);
-        $("#test").append("Browser: " + obj.browser.name + " " + obj.browser.version + "<br/>");
         $.each(obj.pages, function(keyPages,page) {
 //console.log(keyPages,page);
             noofPages++;
@@ -209,12 +212,32 @@ function parseHarFileTestResults(harFile)
             // append page ids to dropdown
             $("#selPages").append($('<option></option>').val(page.id).html(page._URL));
         }); // end pages
-        $("#test").append('Number of Pages Tested: ' + noofPages + "<br/>");
-        $("#test").append('Number of Steps: ' + noofSteps + "<br/>");
-        $("#test").append('Number of Runs: ' + noofRuns + "<br/>");
+        $("#test").append('<span class="testinfo">Browser: ' + obj.browser.name + " " + obj.browser.version + '</span>');
+        $("#test").append('<span class="testinfo">Number of Pages Tested: ' + noofPages+ '</span>');
+        $("#test").append('<span class="testinfo">Number of Steps: ' + noofSteps+ '</span>');
+        $("#test").append('<span class="testinfo">Number of Runs: ' + noofRuns+ '</span>');
 
     }); // end log
+    parseHarFilePage(harFile);
     parseHarFileSummary(harFile);
+}
+
+function parseHarFilePage(harFile)
+{
+//console.log("summary called for page",selPageID);
+    // prepare divs
+//console.log(harFile);
+    $.each(harFile, function(key,obj) {
+        $.each(obj.pages, function(keyPages,page) {
+            if (page.id == selPageID)
+            {
+//console.log("page matched", page.id);
+                // extract page summary information
+console.log(page);
+            $("#pagename").text(page.title);
+            }
+        });
+    });
 }
 
 function parseHarFileSummary(harFile)
@@ -231,20 +254,35 @@ function parseHarFileSummary(harFile)
             {
 //console.log("page matched", page.id);
                 // extract page summary information
-//console.log(page);
-
+console.log(page);
                 // get page stats
                 addStat(statsList,"Total Page Size","",formatBytes(page._bytesIn),"","")
                 addStat(statsList,"No. of Requests","",page._requests,"","")
                 addStat(statsList,"Speed Index","",page._SpeedIndex,"","")
                 addStat(statsList,"Render Start","",page.pageTimings._startRender/1000,"s","")
-                addStat(statsList,"Base CDN","",page._base_page_cdn,"","");
+                //addStat(statsList,"Base CDN","",page._base_page_cdn,"","");
                 $.each(page._detected, function(kd,kditem) {
 //console.log(kd,kditem);
                     switch(kd)
                     {
                         case "Tag Managers":
-                        addStat(statsList,"Tag Manager","",kditem,"","");
+                            addStat(statsList,"Tag Managers","",kditem,"","");
+                            break;
+                        case "Analytics":
+                            addStat(statsList,"Analytics","",kditem,"","");
+                            break; 
+                        case "CDN":
+                            addStat(statsList,"CDN","",kditem,"","");
+                            break;
+                        case "Advertising Networks":
+                            addStat(statsList,"Advertising Networks","",kditem,"","");
+                            break;
+                        case "JavaScript Frameworks":
+                            addStat(statsList,"JavaScript Frameworks","",kditem,"","");
+                            break;
+                        case "Web Frameworks":
+                            addStat(statsList,"Web Frameworks","",kditem,"","");
+                            break; 
                     }
                 });
                 if(page._Images)
@@ -296,9 +334,12 @@ function addStat(statsList,headline,strapline,value,suffix,format)
     if(txtValue.length < 10)
         lineValue.setAttribute("class","statvalue");
     else
-    {
-        lineValue.setAttribute("class","statvalue statvaluesmall");
-    }
+        if(txtValue.length < 16)
+            lineValue.setAttribute("class","statvalue statvaluemedium");
+        else
+        {
+            lineValue.setAttribute("class","statvalue statvaluesmall");
+        }
 
     lineHeadline.appendChild(txtHeadline);
     lineValue.appendChild(txtValue);
@@ -978,3 +1019,12 @@ function getNiceTime(fromDate, toDate, levels, prefix) {
 }
 
 function formatBytes(a,b){if(0==a)return"0 Bytes";var c=1024,d=b||2,e=["Bytes","KB","MB","GB","TB","PB","EB","ZB","YB"],f=Math.floor(Math.log(a)/Math.log(c));return parseFloat((a/Math.pow(c,f)).toFixed(d))+" "+e[f]}
+
+function myFunction() {
+    var x = document.getElementById("myTopnav");
+    if (x.className === "topnav") {
+        x.className += " responsive";
+    } else {
+        x.className = "topnav";
+    }
+}

@@ -1,19 +1,35 @@
 <html>
 <head>
     <title>Webpage Roaster</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="//cdn.datatables.net/1.10.18/css/jquery.dataTables.min.css"> 
     <link rel="stylesheet" href="css/wpttd.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 </body>
 <h1>Webpage Roaster - Advanced Results Analysis<a id="wpthistory" href="https://www.webpagetest.org/testlog.php?days=1&filter=&all=on" target="_blank">WPT History</a></h1>
-<label for="wptlink">WPT ID</label>
-<input name="wptlink" id="wptlink" value="https://www.webpagetest.org/result/180618_H9_ZMR/"/>
-<button name="sbm" id="sbm">Submit</button>
-<div id="containerTest">
+<div class="topnav" id="myTopnav">
+    <a href="#home" class="active">Home</a>
+    <a href="#news">News</a>
+    <a href="#contact">Contact</a>
+    <a href="#about">About</a>
+    <a href="javascript:void(0);" class="icon" onclick="myFunction()">
+      <i class="fa fa-bars"></i>
+    </a>
+</div>
+<div id="containerjobsel">
+    <div class="jobseldata">
+        <label for="wptlink">WPT ID</label>
+        <input name="wptlink" id="wptlink" value="https://www.webpagetest.org/result/180618_H9_ZMR/"/>
+        <button name="sbm" id="sbm">Read Results</button>
+    </div>
+    <div id="test"></div>
     <div id="pageselection">
         <label for="selPages">Page</label>
         <select id='selPages'></select>
     </div>
+</div>
+<div id="containerTest">
     <div id="buttons">
         <button name="summary" id="optSummary">Summary</button>
         <button name="objects" id="optObjects">Objects</button>
@@ -22,6 +38,7 @@
         <button name="fonts" id="optFonts">Fonts</button>
         <button name="thirdparties" id="optThirdParties">Third Parties</button>
     </div>
+    <div id="pagename"></div>
     <div id="summary"></div>
     <div id="detail"></div>
 </div>

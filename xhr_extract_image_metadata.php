@@ -11,8 +11,8 @@ $no = $_REQUEST['no'];
 // create folder for job number
 $filepath_savedir = joinFilePaths($filepath_basesavedir, $jn); 
 if (!file_exists($filepath_savedir)) {
-  mkdir($filepath_savedir, 0777, true);
-//  echo "creating dir: " . $filepath_savedir . PHP_EOL;
+ @mkdir($filepath_savedir, 0777, true);
+//echo "creating dir: " . $filepath_savedir . PHP_EOL;
 }
 $savepath = joinFilePaths($filepath_savedir,$no . "_" . $fn);
 //echo "saving image to " . $savepath . PHP_EOL;
@@ -50,7 +50,7 @@ function getMetadata($image_file,$no)
     if($OS == "Windows")
         exec($perlbasedir . 'perl tools\ExifToolPerl\exiftool.pl -v ' . $image_file,$res);
     else
-        exec('tools\exiftool.pl -v ' . $image_file,$res);
+        exec('./tools/ExifTool/exiftool -v ' . $image_file,$res);
 // debug print
 //print_r ($res);
 
