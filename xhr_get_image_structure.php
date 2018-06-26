@@ -17,9 +17,18 @@ $savepath = joinFilePaths($filepath_savedir,$no . "_" . $fn);
 $savepath_tn = joinFilePaths($filepath_savedir,$no . "_tn_" . $fn);
 $savepath_tnps = joinFilePaths($filepath_savedir,$no . "_tnps_" . $fn);
 $savepathanalysis = joinFilePaths($filepath_savedir,$no . "_" . "etanalysis.txt");
-$roastpath = joinFilePaths("//roast", $jn,$no . "_" . $fn);
-$roastpath_tn = joinFilePaths("//roast", $jn,$no . "_tn_" . $fn);
-$roastpath_tnps = joinFilePaths("//roast", $jn,$no . "_tnps_" . $fn);
+if ($OS == "Windows")
+{
+    $roastpath = joinFilePaths("//roast", $jn,$no . "_" . $fn);
+    $roastpath_tn = joinFilePaths("//roast", $jn,$no . "_tn_" . $fn);
+    $roastpath_tnps = joinFilePaths("//roast", $jn,$no . "_tnps_" . $fn);
+}
+else
+{
+    $roastpath = "http://roast.webpageroaster.com/" . $jn. "/". $no . "_" . $fn;
+    $roastpath_tn = "http://roast.webpageroaster.com/". $jn. "/". $no . "_tn_" . $fn;
+    $roastpath_tnps = "http://roast.webpageroaster.com/". $jn. "/". $no . "_tnps_" . $fn;
+}
 //echo "saving image to " . $savepath . PHP_EOL;
 if(!file_exists($savepath_tn))
     $roastpath_tn = '';

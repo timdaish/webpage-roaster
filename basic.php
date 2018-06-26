@@ -21,7 +21,7 @@ if ($OS == "Windows")
 else
 {
     //$cookie_jar = tempnam("/var/sites/w/webpageroaster.com/", "cky");
-    $drv = '/var/sites/w/webpageroaster.com';
+    $drv = '/var/sites/w/webpageroaster.com/subdomains';
     $filepath_basesavedir = $drv . "/roast/";
 }
 function joinFilePaths()
