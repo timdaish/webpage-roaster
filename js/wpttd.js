@@ -625,7 +625,7 @@ function parseHarFileImages()
     var buttonViewNone = document.createElement("button");
     buttonMetaData.value = "Get Metadata";
     buttonMetaData.setAttribute("id", "metadata");
-    buttonMetaData.appendChild(document.createTextNode("Get Metadata"));
+    buttonMetaData.appendChild(document.createTextNode("Read Metadata"));
     buttonView.value = "View";
     buttonView.setAttribute("id", "viewimages");
     buttonView.appendChild(document.createTextNode("View"));
@@ -675,7 +675,7 @@ function viewImagesinTable()
         var d = this.data();
     
 //console.log(d[0],d[6],parseInt(d[6].replace(/,/g, '')));
-    var filename = getFileName(d[1]);
+    var filename = getFileName(d[3]);
     var filesize = d[8];
 
     if(parseInt(filesize.replace(/,/g, '')) > 44) // ignore tracking pixels less than 45 bytes
@@ -683,7 +683,7 @@ function viewImagesinTable()
         var imagetoview = document.createElement("figure");
         imagetoview.setAttribute("id", "image_" + d[2]);
         $('#imagesview').append($(imagetoview));
-        $('#image_'+ d[2]).append($('<img>',{id:'theImg_'+ d[2],src:d[0],class: 'displayedimage'}));
+        $('#image_'+ d[2]).append($('<img>',{id:'theImg_'+ d[2],src:d[1],class: 'displayedimage'}));
         $('#image_'+ d[2]).append($('<figcaption>' + filename + ' (' + filesize.toLocaleString('en-GB') + ' bytes)' + '</figcaption>'));
         //$('#imagesview').append($(imagetoview));
         
