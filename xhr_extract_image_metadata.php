@@ -18,13 +18,14 @@ if (!file_exists($filepath_savedir)) {
 $savepath = joinFilePaths($filepath_savedir,$no . "_" . $fn);
 $savepath_tn = joinFilePaths($filepath_savedir,$no . "_tn_" . $fn);
 $savepath_tnps = joinFilePaths($filepath_savedir,$no . "_tnps_" . $fn);
-$savepathanalysis = joinFilePaths($filepath_savedir,$no . "_" . "etanalysis.txt");
+$savepathanalysis = joinFilePaths($filepath_savedir,$no . "_" . "etanalysis_vb.txt");
+$savepathbasicanalysis = joinFilePaths($filepath_savedir,$no . "_" . "etanalysis_b.txt");
 //echo "saving image to " . $savepath . PHP_EOL;
 if (!file_exists($savepath))
     download_image($fp, $savepath);
 
 if (file_exists($savepath))
-    $metadata = getMetadata($savepath,$no,$savepathanalysis,$savepath_tn,$savepath_tnps);
+    $metadata = getMetadata($savepath,$no,$savepathanalysis,$savepathbasicanalysis,$savepath_tn,$savepath_tnps);
 
 // output the metadata array as JSON
 echo (json_encode($metadata));

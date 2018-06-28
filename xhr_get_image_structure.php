@@ -17,6 +17,7 @@ $savepath = joinFilePaths($filepath_savedir,$no . "_" . $fn);
 $savepath_tn = joinFilePaths($filepath_savedir,$no . "_tn_" . $fn);
 $savepath_tnps = joinFilePaths($filepath_savedir,$no . "_tnps_" . $fn);
 $savepathanalysis = joinFilePaths($filepath_savedir,$no . "_" . "etanalysis.txt");
+$savepathbasicanalysis = joinFilePaths($filepath_savedir,$no . "_" . "etanalysis_b.txt");
 if ($OS == "Windows")
 {
     $roastpath = joinFilePaths("//roast", $jn,$no . "_" . $fn);
@@ -37,12 +38,18 @@ if(!file_exists($savepath_tnps))
 if (!file_exists($savepath))
     download_image($fp, $savepath);
 if (file_exists($savepath))
-    $metadata = getMetadata($savepath,$no,$savepathanalysis,$savepath_tn,$savepath_tnps);
+    $metadata = getMetadata($savepath,$no,$savepathanalysis,$savepathbasicanalysis,$savepath_tn,$savepath_tnps);
 
 //print_r( $metadata);
 
 $structure = file_get_contents($savepathanalysis);
 //echo $structure;
+
+// replace any % signs to prevent URL decoding
+$roastpath = str_replace("%","%25",$roastpath);
+$roastpath_tn = str_replace("%","%25",$roastpath_tn);
+$roastpath_tnps = str_replace("%","%25",$roastpath_tnps);
+
 $arr = array('no' => $no,
     'structure' => $structure,
     'roastpath' => $roastpath,

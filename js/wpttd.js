@@ -1,4 +1,4 @@
-// Webpage Roaster - Javascript
+// Webpage Roaster - JavaScript
 // Tim Daish, 2018
 var harFile = '';
 var selPageID = 'page_1_0_1';
@@ -8,6 +8,23 @@ var noofPages = 0;
 var noofSteps = 0;
 var noofRuns = 0;
 var fvonly = true;
+
+$(document).ready(function(){
+    dotestWptLink();
+});
+///////////////////////////////
+function dotestWptLink(){
+//console.log("dotest");
+    var input = document.getElementById('wptlink');
+    if( localStorage.wptlink ){
+        input.value = localStorage.wptlink;
+    }
+
+    input.addEventListener('blur', function(){
+        localStorage.wptlink = input.value;
+//console.log("setting wptlink");
+    }, false);
+} // end function dotestWptLink()
 
 // button options
 $( "#sbm" ).click(function() {
@@ -548,6 +565,7 @@ function parseHarFileImages()
         {"label": "Format", "pfield":"format" },
         {"label": "Encoding", "pfield":"encoding" },
         {"label": "Size (bytes)","field":"_objectSize","format": "n,"},
+        {"label": "Resolution (px)", "pfield":"resolution" },
         {"label": "Metadata Size (bytes)", "pfield":"metadatabytes" },
         {"label": "JFIF (bytes)", "pfield":"jfifbytes" },
         {"label": "EXIF (bytes)", "pfield":"exifbytes" },
@@ -559,6 +577,9 @@ function parseHarFileImages()
         {"label": "PhotoShop Quality", "pfield":"pshopq" },
         {"label": "Esimated JPEG Quality", "pfield":"jpegq" },
         {"label": "GIF Animiation Frame Count", "pfield":"framecount" },
+        {"label": "Colour Type", "pfield":"colortype" },
+        {"label": "Colour Depth", "pfield":"colordepth" },
+        {"label": "Chroma Subsampling", "pfield":"chroma" },
         {"label": "expand","field":"expand","format": "expand"},
     ];
     // create table header and body
@@ -585,7 +606,7 @@ function parseHarFileImages()
                 "searchable": false
             },
             {
-                "targets": [ 2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],
+                "targets": [ 2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23],
                 "visible": true,
                 "searchable": true
             }
@@ -675,7 +696,7 @@ function viewImagesinTable()
         var d = this.data();
     
 //console.log(d[0],d[6],parseInt(d[6].replace(/,/g, '')));
-    var filename = getFileName(d[3]);
+    var filename = getFileName(d[1]);
     var filesize = d[8];
 
     if(parseInt(filesize.replace(/,/g, '')) > 44) // ignore tracking pixels less than 45 bytes
@@ -711,6 +732,14 @@ function extractImageMetadata()
 
         if(mdb == "unread")
         {
+
+        //     var index;
+        //     var a = [6, 7, 9, 10,11,12,13,14,15,16,17,18,19,20,21,22,23];
+        //     for (index = 0; index < a.length; ++index) {
+        // console.log(a[index]);
+        //         $('#tableImages').dataTable().fnUpdate("reading", $('[data-id=' + filenumber + ']'),a[index],false); //
+        //     }
+        
         // get image from server
         
         // Assign handlers immediately after making the request,
@@ -723,32 +752,52 @@ function extractImageMetadata()
         .done(function(mdata) {
 //console.log(mdata);
             // update table with image metadata
-            var rowid = mdata.no.toString();
-            // update table using fnupdate
-            $('#tableImages').dataTable().fnUpdate(mdata.mimeType, $('[data-id=' + rowid + ']'),5,false); // mime type 
-            $('#tableImages').dataTable().fnUpdate(mdata.version, $('[data-id=' + rowid + ']'),6,false); // format version 
-            $('#tableImages').dataTable().fnUpdate(mdata.encoding, $('[data-id=' + rowid + ']'),7,false); // encoding
-            // 8 is file size in bytes
-            $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.metadatabytes), $('[data-id=' + rowid + ']'),9,false); // metadata bytes
-            $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.app0jfifbytes), $('[data-id=' + rowid + ']'),10,false); // jfif bytes
-            $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.app1exifbytes), $('[data-id=' + rowid + ']'),11,false); // exif bytes
-            $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.app2iccbytes), $('[data-id=' + rowid + ']'),12,false); // icc bytes
-            $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.xmpbytes), $('[data-id=' + rowid + ']'),13,false); // xmp bytes
-            $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.commentbytes), $('[data-id=' + rowid + ']'),14,false); // comment bytes
-            $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.app12bytes), $('[data-id=' + rowid + ']'),15,false); // app12 ducky tag bytes
-            $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.app13bytes), $('[data-id=' + rowid + ']'),16,false); // app13 photoshop bytes
-            if(mdata.type == "JPEG" && mdata.duckyquality > 0)
-                $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.duckyquality) + "%", $('[data-id=' + rowid + ']'),17,false); // photoshop quality
-            else
-                $('#tableImages').dataTable().fnUpdate( "", $('[data-id=' + rowid + ']'),17,false); // photoshop quality not defined
-            if(mdata.type == "JPEG")
-                $('#tableImages').dataTable().fnUpdate(mdata.jpegestquality, $('[data-id=' + rowid + ']'),18,false); // photoshop quality
-            else
-                $('#tableImages').dataTable().fnUpdate( "", $('[data-id=' + rowid + ']'),18,false); // esimated quality not defined
-            if(mdata.type == "GIF" && mdata.gifframecount > 0)
-                $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.gifframecount), $('[data-id=' + rowid + ']'),19,false); // gif animation frames
-            else
-                $('#tableImages').dataTable().fnUpdate( "", $('[data-id=' + rowid + ']'),19,false); // gif animation frames not defined
+            try 
+            {
+                var rowid = mdata.no.toString();
+                  // update table using fnupdate
+                $('#tableImages').dataTable().fnUpdate(mdata.mimeType, $('[data-id=' + rowid + ']'),5,false); // mime type 
+                $('#tableImages').dataTable().fnUpdate(mdata.version, $('[data-id=' + rowid + ']'),6,false); // format version 
+                $('#tableImages').dataTable().fnUpdate(mdata.encoding, $('[data-id=' + rowid + ']'),7,false); // encoding
+                // 8 is file size in bytes
+                $('#tableImages').dataTable().fnUpdate(mdata.imageSize, $('[data-id=' + rowid + ']'),9,false); // metadata bytes
+                $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.metadatabytes), $('[data-id=' + rowid + ']'),10,false); // metadata bytes
+                $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.app0jfifbytes), $('[data-id=' + rowid + ']'),11,false); // jfif bytes
+                $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.app1exifbytes), $('[data-id=' + rowid + ']'),12,false); // exif bytes
+                $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.iccbytes), $('[data-id=' + rowid + ']'),13,false); // icc bytes
+                $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.xmpbytes), $('[data-id=' + rowid + ']'),14,false); // xmp bytes
+                $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.commentbytes), $('[data-id=' + rowid + ']'),15,false); // comment bytes
+                $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.app12bytes), $('[data-id=' + rowid + ']'),16,false); // app12 ducky tag bytes
+                $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.app13bytes), $('[data-id=' + rowid + ']'),17,false); // app13 photoshop bytes
+                if(mdata.type == "JPEG" && mdata.duckyquality > 0)
+                    $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.duckyquality) + "%", $('[data-id=' + rowid + ']'),18,false); // photoshop quality
+                else
+                    $('#tableImages').dataTable().fnUpdate( "", $('[data-id=' + rowid + ']'),18,false); // photoshop quality not defined
+                if(mdata.type == "JPEG")
+                    $('#tableImages').dataTable().fnUpdate(mdata.jpegestquality, $('[data-id=' + rowid + ']'),19,false); // photoshop quality
+                else
+                    $('#tableImages').dataTable().fnUpdate( "", $('[data-id=' + rowid + ']'),19,false); // esimated quality not defined
+                if(mdata.type == "GIF" && mdata.gifframecount > 0)
+                    $('#tableImages').dataTable().fnUpdate(formatNumber(mdata.gifframecount), $('[data-id=' + rowid + ']'),20,false); // gif animation frames
+                else
+                    $('#tableImages').dataTable().fnUpdate( "", $('[data-id=' + rowid + ']'),20,false); // gif animation frames not defined
+                $('#tableImages').dataTable().fnUpdate(mdata.colortype, $('[data-id=' + rowid + ']'),21,false); // colour type
+                $('#tableImages').dataTable().fnUpdate(mdata.colordepth, $('[data-id=' + rowid + ']'),22,false); // colour depth
+                $('#tableImages').dataTable().fnUpdate(mdata.chroma, $('[data-id=' + rowid + ']'),23,false); // colour depth
+            }
+            catch(err)
+            {
+                //error
+                var index;
+                var a = [6, 7, 9, 10,11,12,13,14,15,16,17,18,19,20,21,22,23];
+                for (index = 0; index < a.length; ++index) {
+//console.log(a[index]);
+                    $('#tableImages').dataTable().fnUpdate("error", $('[data-id=' + filenumber + ']'),a[index],false); //
+                }
+
+
+            }
+
 
         })
         .fail(function(xhr, textStatus, errorThrown) {
@@ -801,7 +850,7 @@ function addTableHeaders(data,subdata = '')
 function addTableBody(data,cType,subDataType = '',subdata = '')
 {
     // create arrays of data content types
-    var arrayImageContentTypes = ["image/jpeg","image/gif", "image/webp", "image/bmp", "image/x-icon", "image/png"];
+    var arrayImageContentTypes = ["image/jpeg","image/gif", "image/webp", "image/bmp", "image/x-icon", "image/png", "image/jp2"];
     var arrayJavaScriptContentTypes = ["application/javascript","application/x-javascript","text/javascript"];
 
     // copy the required array of data content types
@@ -1031,6 +1080,8 @@ function addTableBody(data,cType,subDataType = '',subdata = '')
 /////////////////////////
 // utility functions
 function formatNumber (num) {
+    if(!num)
+        return '';
     return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,")
 }
 function convertSeconds(seconds) {
@@ -1177,6 +1228,7 @@ function myFunction() {
         x.className = "topnav";
     }
 }
+////////////////////////////////////////////////////////////
 
 /* Formatting function for row details - modify as you need */
 function formatObjects ( d ) {
