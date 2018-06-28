@@ -26,7 +26,7 @@ function getMetadata($image_file,$no,$analysis_file,$basicanalysis_file,$tnexif_
     if($OS == "Windows")
         exec($perlbasedir . 'perl tools\ExifToolPerl\exiftool.pl ' . $image_file,$resBasic);
     else
-        exec('./tools/ExifTool/exiftool ' . $image_file,$resBasic);
+        exec('./tools/ExifTool/exiftool ' . escapeshellarg($image_file),$resBasic);
     // debug print
 //print_r ($resBasic);
     // call exiftool - get verbose output and save to file as text
@@ -34,7 +34,7 @@ function getMetadata($image_file,$no,$analysis_file,$basicanalysis_file,$tnexif_
     if($OS == "Windows")
         exec($perlbasedir . 'perl tools\ExifToolPerl\exiftool.pl -v ' . $image_file,$resVerbose);
     else
-        exec('./tools/ExifTool/exiftool -v ' . $image_file,$resVerbose);
+        exec('./tools/ExifTool/exiftool -v ' . escapeshellarg($image_file),$resVerbose);
     // debug print
     //print_r ($resVerbose);
 
@@ -44,7 +44,7 @@ function getMetadata($image_file,$no,$analysis_file,$basicanalysis_file,$tnexif_
     if($OS == "Windows")
         exec($perlbasedir . 'perl tools\ExifToolPerl\exiftool.pl -b -ThumbnailImage ' . $image_file . " > " . $tnexif_image_file,$restn);
     else
-        exec('./tools/ExifTool/exiftool -b -ThumbnailImage ' . $image_file . " > " . $tnexif_image_file,$restn);
+        exec('./tools/ExifTool/exiftool -b -ThumbnailImage ' . escapeshellarg($image_file) . " > " . $tnexif_image_file,$restn);
     // get file size of thumbnail and delete if zero bytes
     if(file_exists($tnexif_image_file) && filesize($tnexif_image_file) == 0)
         unlink($tnexif_image_file);
@@ -54,7 +54,7 @@ function getMetadata($image_file,$no,$analysis_file,$basicanalysis_file,$tnexif_
     if($OS == "Windows")
         exec($perlbasedir . 'perl tools\ExifToolPerl\exiftool.pl -b -PhotoShopThumbnail ' . $image_file . " > " . $tnps_image_file,$restn);
     else
-        exec('./tools/ExifTool/exiftool -b -PhotoShopThumbnail ' . $image_file . " > " . $tnps_image_file,$restn);
+        exec('./tools/ExifTool/exiftool -b -PhotoShopThumbnail ' . escapeshellarg($image_file) . " > " . $tnps_image_file,$restn);
     // get file size of thumbnail and delete if zero bytes
     if(file_exists($tnps_image_file) && filesize($tnps_image_file) == 0)
         unlink($tnps_image_file);
@@ -393,7 +393,7 @@ function getMetadataJPEG($resVerbose,$image_file,$no,$analysis_file,$basicanalys
             if($OS == "Windows")
                 exec('tools\jpegquality '. $image_file,$qres);
             else
-                exec('./tools/jpegq '. $image_file,$qres);
+                exec('./tools/jpegq '. escapeshellarg($image_file),$qres);
             $resstr = implode($qres);
             if(strpos($resstr,'%'))
             {
@@ -726,7 +726,7 @@ function getMetadataWEBP($resVerbose,$image_file,$no,$analysis_file,$basicanalys
             if($OS == "Windows")
                 exec('tools\jpegquality '. $image_file,$qres);
             else
-                exec('./tools/jpegq '. $image_file,$qres);
+                exec('./tools/jpegq '. escapeshellarg($image_file),$qres);
             $resstr = implode($qres);
             if(strpos($resstr,'%'))
             {

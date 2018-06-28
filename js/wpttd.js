@@ -730,7 +730,7 @@ function extractImageMetadata()
         var filenumber = d[2];
         var mdb = d[9];
 
-        if(mdb == "unread")
+        if(mdb == "unread" || mdb == "error")
         {
 
         //     var index;
