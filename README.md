@@ -14,7 +14,7 @@
 
 
 # Introduction
-WebPage Roaster - Results Optimisation and Analysis from a WebPageTest result link
+WebPage Roaster - Advanced Results Optimisation and Analysis from a WebPageTest (WPT) result link
 
 This is the start of a new project to take a set of WPT results and display additional analysis in the form of tables and charts.
 
@@ -22,18 +22,32 @@ Initial work focusses upon identifying and allowing selection of any page test r
 
 With a page selected, the work begins to display the data including the following:
 - summmary of key metrics and stats.
-- JavaScript analysis
-- CSS analysis
-- font analysis
+-- basic info shown
 - image analysis (metadata, quality) and image optimisation
+-- detailed info shown for image metadata and quality
+- JavaScript analysis
+-- not available yet
+- CSS analysis
+-- not available yet
+- font analysis
+-- not available yet
 - third party analysis
+-- not available yet
 - domain and network analysis
+-- not available yet
 - response header analysis
+-- basic info shown
 - caching header analysis
+-- not available yet
 
 # Development Approach
-agile and evolutionary... write a bit, test a bit and repeat.
+Agile and evolutionary... write a bit, test a bit and repeat.
 
 # Frameworks and Libraries used
 - jQuery 3.3.1
 - jQuery Datatables
+- ExifTool
+- FontAwesome - but this will be replaced as it has too many icons
+
+# Data Privacy
+A few items of data are recorded for statistical purposes. This includes the user's IP address, the name of the WPT server from which a test result is being read and the test ID itself. Details will not be used for anything other than statistical analysis. Data is stored on the Webpage Roaster servers hosted in the UK (TSOHost cloud service).
