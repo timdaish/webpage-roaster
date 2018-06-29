@@ -2,12 +2,17 @@
 header('Content-Type: application/json');
 require_once "basic.php";
 require_once "image_metadata.php";
+require_once "dbconnect.php";
+require_once "dblogging.php";
 // read parameters
 $jn = $_REQUEST['jn'];
 $fp = $_REQUEST['fp'];
 $fn = $_REQUEST['fn'];
 $no = $_REQUEST['no'];
+$server = $_REQUEST['svr'];
 
+// log request
+logAction($server,$jn,4,$no . ": ".$fn,1); // image detail viewed
 //echo "reading structure from file " . $fn . PHP_EOL;
 
 // get name of folder for job number

@@ -4,6 +4,7 @@ var harFile = '';
 var selPageID = 'page_1_0_1';
 var displaySection = 'summary';
 var jobnumber = '';
+var server = '';
 var noofPages = 0;
 var noofSteps = 0;
 var noofRuns = 0;
@@ -43,23 +44,11 @@ $( "#sbm" ).click(function() {
     //     wptlink = wptlink + "/";
     var test = getWPTResultsID(wptlink);
     jobnumber = test.testid;
+    server = test.serverpath;
 //console.log ("server", test.serverpath);
 //console.log ("testid", test.testid);
     harFile = getWPTResultsHarFile(test.serverpath, test.testid);
-    // post details for logging
-    $.ajax({
-        url: "xhr_logging.php", 
-        type: "POST",
-        data: { sv: test.serverpath, id : test.testid }
-    })
-    .done(function() {
-    })
-    .fail(function() {
-    //alert( "error logging request " + filename );
-    })
-    .always(function() {
-    //alert( "complete" );
-    });
+    logAction(server,jobnumber,1,"ip",1);
 });
 
 $( "#optSummary" ).click(function() {
@@ -111,7 +100,8 @@ $( "#selPages" ).change(function() {
     //var end = this.value;
     clearDivs(false,true,true);
     selPageID = $('#selPages').val();
-console.log("active page id: ", selPageID);
+//console.log("active page id: ", selPageID);
+
 
     switch (displaySection)
     {
@@ -270,6 +260,7 @@ function parseHarFilePage(harFile)
         $.each(obj.pages, function(keyPages,page) {
             if (page.id == selPageID)
             {
+                logAction(server,jobnumber,2,selPageID,1);
 //console.log("page matched", page.id);
                 // extract page summary information
 //console.log(page);
@@ -747,7 +738,7 @@ function extractImageMetadata()
         $.ajax({
             url: "xhr_extract_image_metadata.php", 
             type: "POST",
-            data: { jn: jobnumber, fp : filepath, fn: filename, no: filenumber }
+            data: { svr: server, jn: jobnumber, fp : filepath, fn: filename, no: filenumber }
         })
         .done(function(mdata) {
 //console.log(mdata);
@@ -801,8 +792,8 @@ function extractImageMetadata()
 
         })
         .fail(function(xhr, textStatus, errorThrown) {
-            console.log( "error processing image " + filename );
-            console.log('STATUS: '+textStatus+'\nERROR THROWN: '+errorThrown);
+console.log( "error processing image " + filename );
+console.log('STATUS: '+textStatus+'\nERROR THROWN: '+errorThrown);
         })
         .always(function() {
         //alert( "complete" );
@@ -1307,7 +1298,7 @@ function formatImages ( d ) {
     $.ajax({
         url: "xhr_get_image_structure.php", 
         type: "POST",
-        data: { jn: jobnumber, fp : filepath, fn: filename, no: filenumber }
+        data: { svr: server, jn: jobnumber, fp : filepath, fn: filename, no: filenumber }
     })
     .done(function(imgdata) {
 //console.log("format images",imgdata);
@@ -1395,4 +1386,23 @@ $.each(harFile, function(key,obj) {
         });
 //console.log(rdata);
         return rdata;
+}
+
+function logAction(svr,testid,msgid,msg,status)
+{
+    // post details for logging
+    $.ajax({
+        url: "xhr_logging.php", 
+        type: "POST",
+        data: { msgid: msgid, svr: svr, testid : testid, msg: msg, st: status }
+    })
+    .done(function() {
+//console.log( "success logging request " + msgid );
+    })
+    .fail(function() {
+//console.log( "error logging request " + msgid );
+    })
+    .always(function() {
+    //alert( "complete" );
+    });
 }
