@@ -7,25 +7,18 @@
 </head>
     <body>
 <h1>Webpage Roaster - About</h1>
-<div class="topnav" id="myTopnav">
-    <a href="index.htm" ><i class="fa fa-home fa-fw"></i>Home</a>
-    <a href="#news"><i class="fa fa-newspaper fa-fw"></i>News</a>
-    <a href="contact.htm"><i class="fa fa-globe fa-fw"></i>Contact</a>
-    <a href="#about" class="active"><i class="fa fa-info fa-fw"></i>About</a>
-    <a href="javascript:void(0);" class="icon" onclick="myFunction()">
-      <i class="fa fa-bars"></i>
-    </a>
-</div>
 <h2>Purpose</h2>
-The Webpage Roaster (aka "Roaster") is designed to display <a href="https://www.webpagetest.org/" target="_blank">WebPageTest (WPT)</a> results in easy-to-read and easy-to-navigate formats and to promote new visualisations of performance data and analyses. It is designed to display additional details for page objects to help users of WebPageTest understand more about their page construction and why objects are the size they are, e.g. image metadata and quality.
+The Webpage Roaster (aka "Roaster") is designed to display WebPageTest (WPT) results in easy-to-read and easy-to-navigate formats and to promote new visualisations of performance data and analyses. It complements WPT results displays rather than replacing them; it is designed to display additional details for page objects to help users of WebPageTest understand more about their page construction and why objects are the size they are, e.g. image metadata and quality.
+<h2>To Do</h2>
+I expect to develop Roaster over time and introduce new features and deliver more insights into improving page performance.
 <h2>Background</h2>
-Roaster has evolved from another of my tools, the Webpage Toaster (aka "Toaster"). That first was a proprietry tool I wrote whilst working as a Web Performance Consultant at NCC Group Web Performance. This tool embraces the best analysis features I developed in Toaster and puts the on the web for all to use.
+Roaster has evolved from another of my tools, the Webpage Toaster (aka "Toaster"). That was a proprietry tool I wrote whilst working as a Web Performance Consultant at NCC Group Web Performance and helped me develop several new insights into page performance that I could not get elsewhere. This tool embraces the best analysis features I developed in Toaster and puts the on the web for all to use. Toaster has now been made open source so I'll try to get a copy of it working on the web despite the fact I originally designed it for local webserver use on Windows so the transition may not be straightforward.
 <h2>Design and Composition</h2>
 Roaster is designed to be responsive to allow the test results to be viewed upon any device. A desktop is recommended however as the volume of results displayed will be much easier to consume; some of the tables are quite wide. I'll work on additional forms of presentation to make this easier in the future.
 <p>Both JavaScript and PHP are used to make Roaster. The WPT HAR file is downloaded and parsed to identify all of the pages tested and their objects.
 <p>
 Roaster makes use of existing tools to help produce and present the analyses, including:
-<ul>
+<ul class="toolslinks">
     <li><a href= "https://www.sno.phy.queensu.ca/~phil/exiftool/" target="_blank">Exiftool</a></li>
     <li><a href= "http://www.hackerfactor.com/src/jpegquality.c" target="_blank">jpegquality</a></li>
     <li><a href= "https://jquery.com" target="_blank">jQuery</a></li>
@@ -47,6 +40,9 @@ The last-used WPT ID is stored in local storage for easy access.
     <li>Navigate the various tabs to explore performance data</li>
 </ol>
 <h2>Hints and Tips</h2>
+<h3>Help and Optimisation Boxes</h3>
+I'll develop the boxes shown below the detailed display to show a variety of helpful hints about page and object composition and optimisation tips.
+<h3>Row expansions</h3>
 Table rows can be expanded (click an icon shown at either end of the row). Each table shows different details about the selected object when the row is expanded.
 <h3>Objects</h3>
 TBD
@@ -59,4 +55,23 @@ Image metadata will be read when the first page of results is shown or when the 
 If you use the filter, for example to look for "JPEG" images, you may see some rows with "unread" metadata. Simply click the "Read Metadata" button to scan the images listed and to populate the remainder of the metadata.
 <h4>Image View</h4>
 Click "View" to view all the images listed in one go, at their natural size.
+<footer>
+        <div class="footerbar"></div>
+        <div class="footeritems">
+        </div>
+            <div id="footerlinks">
+                <div class="bar-wrap">
+                    <ul class="links"> <!-- footer menu -->
+                        <li><a href="index.htm">Home</a></li>
+                        <li><a href="#">License</a></li>
+                        <li><a href="contact.htm">Contact</a></li>
+                        <li><a href="#">Advertise</a></li>
+                        <li><a href="about.htm">About</a></li>
+                    </ul>
+                    <div class="clear"></div>
+                    <div class="copyright">&copy;  2018 Tim Daish BA(Hons) MBCS CTAL-TM, All Rights Reserved</div>
+                </div>
+            </div>
+        </footer>
 </body>
+</html>

@@ -12,6 +12,15 @@ var fvonly = true;
 
 $(document).ready(function(){
     dotestWptLink();
+    $("#summary").append('No page loaded');
+    var instructions = '<h2>Instructions</h2>';
+    instructions +='<ol><li>Run a test in WebPageTest</li><li>Copy the result link URL fromWebPageTest</li><li>Paste the link into Roaster&apos;s "WPT ID" input box at the top of this page and click "Read Results"</li>';
+    instructions +='<li>For tests with more than 1 test, select the required page from the "Page" dropdown</li>';
+    instructions +='Note there may be more than one page when:';
+    instructions +='<ul><li>the test is a scripted test and has multiple steps</li><li>testing comprised of more than 1 run</li><li>both First View and Repeat tests were requested</li></ul>';
+    instructions +='<li>Navigate the various tabs to explore performance data</li></ol>';
+
+    $("#detail").append(instructions);
 });
 ///////////////////////////////
 function dotestWptLink(){
@@ -197,6 +206,11 @@ console.log(pathHarFile)
         // console.log(dataHarFile);
         harFile = dataHarFile;
         parseHarFileTestResults(harFile);
+        //enable analyses
+        $("#optSummary").removeAttr("disabled");
+        $("#optObjects").removeAttr("disabled");
+        $("#optHeaders").removeAttr("disabled");
+        $("#optImages").removeAttr("disabled");
         })
         .fail(function() {
             alert( "error" );
@@ -354,6 +368,13 @@ console.log(page);
         }); // end entries
 
     }); // end log
+    // update help boxes
+    $('#help1hdr').text("Summary");
+    $('#help1').text("The summary provides an overview of the page's test results.");
+    $('#help2hdr').text("Page Targets");
+    $('#help2').text("Page size &lt; 0.5MB</br>Render Start times &lt; 0.5s.");
+    $('#help3hdr').text("Third Parties");
+    $('#help3').text("Ensure you get a benefit from each third party tag added to the page.");
 }
 
 function addStat(statsList,headline,strapline,value,suffix,format)
@@ -448,6 +469,13 @@ function parseHarFileObjects()
             tr.addClass('shown');
         }
     } );
+    // update help boxes
+    $('#help1hdr').text("Objects");
+    $('#help1').html("A list of all of the page's objects and their sizes.");
+    $('#help2hdr').text("Optimisation Target");
+    $('#help2').text("Minimise the number of objects on the page.");
+    $('#help3hdr').text("Optimisation Target");
+    $('#help3').text("Reduce the size of objects.");
 }
 
 function parseHarFileHeaders()
@@ -538,6 +566,13 @@ function parseHarFileHeaders()
         }
     } );
 
+   // update help boxes
+   $('#help1hdr').text("Headers");
+   $('#help1').html("Headers for all page objects; hover over fields to see interpretations.</br>Expand a row to view request and response headers.");
+   $('#help2hdr').text("Optimisation Target");
+   $('#help2').text("Employ caching to reduce the need to reload objects when a user revisits a page.");
+   $('#help3hdr').text("Optimisation Target");
+   $('#help3').text("Ensure text objects are served compressed.");
 }
 
 
@@ -665,6 +700,13 @@ function parseHarFileImages()
         // var info = table.page.info();
         // $('#pageInfo').html( 'Showing page: '+info.page+' of '+info.pages );
     } );
+    // update help boxes
+    $('#help1hdr').text("Images");
+    $('#help1').html('Details of images, their format, size, quality settings and embedded metadata. Click "View" to see all of the images."');
+    $('#help2hdr').text("Optimisation Target");
+    $('#help2').text("Reduce image quality to save on bytes");
+    $('#help3hdr').text("Optimisation Target");
+    $('#help3').text("Remove unnessary metadata.");
 }
 
 function getFileName(url) {

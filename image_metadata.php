@@ -24,17 +24,17 @@ function getMetadata($image_file,$no,$analysis_file,$basicanalysis_file,$tnexif_
     // call exiftool - get basic output and save to file as php array
     $resBasic = array();
     if($OS == "Windows")
-        exec($perlbasedir . 'perl tools\ExifToolPerl\exiftool.pl ' . $image_file,$resBasic);
+        exec($perlbasedir . 'perl win_tools\ExifToolPerl\exiftool.pl ' . $image_file,$resBasic);
     else
-        exec('./tools/ExifTool/exiftool ' . escapeshellarg($image_file),$resBasic);
+        exec('./lnx_tools/ExifTool/exiftool ' . escapeshellarg($image_file),$resBasic);
     // debug print
 //print_r ($resBasic);
     // call exiftool - get verbose output and save to file as text
     $resVerbose= array();
     if($OS == "Windows")
-        exec($perlbasedir . 'perl tools\ExifToolPerl\exiftool.pl -v ' . $image_file,$resVerbose);
+        exec($perlbasedir . 'perl win_tools\ExifToolPerl\exiftool.pl -v ' . $image_file,$resVerbose);
     else
-        exec('./tools/ExifTool/exiftool -v ' . escapeshellarg($image_file),$resVerbose);
+        exec('./lnx_tools/ExifTool/exiftool -v ' . escapeshellarg($image_file),$resVerbose);
     // debug print
     //print_r ($resVerbose);
 
@@ -42,9 +42,9 @@ function getMetadata($image_file,$no,$analysis_file,$basicanalysis_file,$tnexif_
     // extract EXIF thumbnail from APP1
     $restn = array();
     if($OS == "Windows")
-        exec($perlbasedir . 'perl tools\ExifToolPerl\exiftool.pl -b -ThumbnailImage ' . $image_file . " > " . $tnexif_image_file,$restn);
+        exec($perlbasedir . 'perl win_tools\ExifToolPerl\exiftool.pl -b -ThumbnailImage ' . $image_file . " > " . $tnexif_image_file,$restn);
     else
-        exec('./tools/ExifTool/exiftool -b -ThumbnailImage ' . escapeshellarg($image_file) . " > " . $tnexif_image_file,$restn);
+        exec('./lnx_tools/ExifTool/exiftool -b -ThumbnailImage ' . escapeshellarg($image_file) . " > " . $tnexif_image_file,$restn);
     // get file size of thumbnail and delete if zero bytes
     if(file_exists($tnexif_image_file) && filesize($tnexif_image_file) == 0)
         unlink($tnexif_image_file);
@@ -52,9 +52,9 @@ function getMetadata($image_file,$no,$analysis_file,$basicanalysis_file,$tnexif_
     // extract PhotoShop thumbnail from APP13
     $restn = array();
     if($OS == "Windows")
-        exec($perlbasedir . 'perl tools\ExifToolPerl\exiftool.pl -b -PhotoShopThumbnail ' . $image_file . " > " . $tnps_image_file,$restn);
+        exec($perlbasedir . 'perl win_tools\ExifToolPerl\exiftool.pl -b -PhotoShopThumbnail ' . $image_file . " > " . $tnps_image_file,$restn);
     else
-        exec('./tools/ExifTool/exiftool -b -PhotoShopThumbnail ' . escapeshellarg($image_file) . " > " . $tnps_image_file,$restn);
+        exec('./lnx_tools/ExifTool/exiftool -b -PhotoShopThumbnail ' . escapeshellarg($image_file) . " > " . $tnps_image_file,$restn);
     // get file size of thumbnail and delete if zero bytes
     if(file_exists($tnps_image_file) && filesize($tnps_image_file) == 0)
         unlink($tnps_image_file);

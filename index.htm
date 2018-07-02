@@ -2,13 +2,13 @@
 <head>
     <title>Webpage Roaster</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" href="//cdn.datatables.net/1.10.18/css/jquery.dataTables.min.css"> 
     <link rel="stylesheet" href="css/wpttd.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 </body>
 <h1>Webpage Roaster - Advanced Results Analysis<a id="wpthistory" href="https://www.webpagetest.org/testlog.php?days=1&filter=&all=on" target="_blank">WPT History</a></h1>
-<div class="topnav" id="myTopnav">
+<!--<div class="topnav" id="myTopnav">
     <a href="#home" class="active"><i class="fa fa-home fa-fw"></i>Home</a>
     <a href="#news"><i class="fa fa-newspaper fa-fw"></i>News</a>
     <a href="contact.htm"><i class="fa fa-globe fa-fw"></i>Contact</a>
@@ -16,7 +16,7 @@
     <a href="javascript:void(0);" class="icon" onclick="myFunction()">
       <i class="fa fa-bars"></i>
     </a>
-</div>
+</div> -->
 <div id="containerjobsel">
     <span class="jobseldata">
         <label for="wptlink">WPT ID</label>
@@ -32,10 +32,10 @@
 </div>
 <div id="containerTest">
     <div id="buttons">
-        <button name="summary" id="optSummary">Summary</button>
-        <button name="objects" id="optObjects">Objects</button>
-        <button name="headers" id="optHeaders">Headers</button>
-        <button name="images" id="optImages">Images</button>
+        <button name="summary" id="optSummary" disabled>Summary</button>
+        <button name="objects" id="optObjects" disabled>Objects</button>
+        <button name="headers" id="optHeaders" disabled>Headers</button>
+        <button name="images" id="optImages" disabled>Images</button>
         <button name="fonts" id="optFonts" disabled>Fonts</button>
         <button name="thirdparties" id="optThirdParties" disabled>Third Parties</button>
     </div>
@@ -43,8 +43,37 @@
     <div id="summary"></div>
     <div id="detail"></div>
 </div>
-<script>
-</script>
+<footer>
+        <div class="footerbar"></div>
+        <div class="footeritems">
+            <div class="item">
+                <h4 id="help1hdr">Summary</h4>
+                <div id="help1">The summary provides an overview of the page's test results.</div>
+                </div>
+            <div class="item">
+                <h4 id="help2hdr">Page Targets</h4>
+                <div id="help2">Page size &lt; 0.5MB<br/>Render Start times &lt; 0.5s
+                </div>
+                </div>
+            <div class="item">
+                <h4 id="help3hdr">Review Images</h4>
+                <div id="help3">Images are a prime candidate for optimisation; lookout for unwanted metadata and high-quality images.</div>
+                </div>
+        </div>
+            <div id="footerlinks">
+                <div class="bar-wrap">
+                    <ul class="links"> <!-- footer menu -->
+                        <li><a href="index.htm">Home</a></li>
+                        <li><a href="#">License</a></li>
+                        <li><a href="contact.htm">Contact</a></li>
+                        <li><a href="#">Advertise</a></li>
+                        <li><a href="about.htm">About</a></li>
+                    </ul>
+                    <div class="clear"></div>
+                    <div class="copyright">&copy;  2018 Tim Daish BA(Hons) MBCS CTAL-TM, All Rights Reserved</div>
+                </div>
+            </div>
+        </footer>
 <script src="js/jquery_3.3.1.min.js" defer></script>
 <script src="//cdn.datatables.net/1.10.18/js/jquery.dataTables.min.js" defer></script>
 <script src="js/wpttd.js" defer></script>
