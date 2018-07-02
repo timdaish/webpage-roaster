@@ -198,12 +198,12 @@ function getWPTResultsHarFile(server,id)
     // Assign handlers immediately after making the request,
     // and remember the jqxhr object for this request
     var jqxhr = $.get( pathHarFile, function() {
-console.log(pathHarFile)
+//console.log(pathHarFile)
     //  alert( "sent success" );
     })
         .done(function(dataHarFile) {
         // alert( "get success" );
-        // console.log(dataHarFile);
+//console.log(dataHarFile);
         harFile = dataHarFile;
         parseHarFileTestResults(harFile);
         //enable analyses
@@ -298,7 +298,7 @@ function parseHarFileSummary(harFile)
             {
 //console.log("page matched", page.id);
                 // extract page summary information
-console.log(page);
+//console.log(page);
                 // get page stats
                 // if(noofRuns > 1)
                 //     addStat(statsList,"Run No.","",page._run,"","");
@@ -307,8 +307,12 @@ console.log(page);
                 addStat(statsList,"Total Page Size","",formatBytes(page._bytesIn),"","")
                 addStat(statsList,"No. of Requests","",page._requests,"","")
                 addStat(statsList,"Render Start","",page.pageTimings._startRender/1000,"s","")
+                addStat(statsList,"DOM Load (end)","",page._domContentLoadedEventEnd/1000,"s","")
+                addStat(statsList,"Doc. Complete","",page._docTime/1000,"s","")
+                addStat(statsList,"Fully Loaded","",page._fullyLoaded/1000,"s","")
                 addStat(statsList,"Speed Index","",page._SpeedIndex,"","")
-                //addStat(statsList,"Base CDN","",page._base_page_cdn,"","");
+                addStat(statsList,"No. of DOM elements","",page._domElements,"","")
+                addStat(statsList,"Base CDN","",page._base_page_cdn,"","");
                 $.each(page._detected, function(kd,kditem) {
 //console.log(kd,kditem);
                     switch(kd)
@@ -331,22 +335,28 @@ console.log(page);
                         case "Web Frameworks":
                             addStat(statsList,"Web Frameworks","",kditem,"","");
                             break; 
+                        case "Web Servers":
+                            addStat(statsList,"Web Servers","",kditem,"","");
+                            break; 
+                        case "Ecommerce":
+                            addStat(statsList,"eCommerce","",kditem,"","");
+                            break; 
                     }
                 });
-                if(page._Images)
-                {
-                    var json = JSON.parse(page._Images);
-//console.log(json);
-                    var noofImages = 0;
-                    $.each(json, function() {
-                        $.each(this, function(k, v) {
-                        /// do stuff
+//                 if(page._Images)
+//                 {
+//                     var json = JSON.parse(page._Images);
+// console.log(json);
+//                     var noofImages = 0;
+//                     $.each(json, function() {
+//                         $.each(this, function(k, v) {
+//                         /// do stuff
                         
-                        });
-                        noofImages++;
-                    });
-                    addStat(statsList,"No. of Images","",noofImages,"","");
-                }
+//                         });
+//                         noofImages++;
+//                     });
+//                     addStat(statsList,"No. of Images","",noofImages,"","");
+//                 }
             }
             else
             {
@@ -370,11 +380,11 @@ console.log(page);
     }); // end log
     // update help boxes
     $('#help1hdr').text("Summary");
-    $('#help1').text("The summary provides an overview of the page's test results.");
+    $('#help1').html("The summary provides an overview of the page's test results.");
     $('#help2hdr').text("Page Targets");
-    $('#help2').text("Page size &lt; 0.5MB</br>Render Start times &lt; 0.5s.");
+    $('#help2').html("Page size &lt; 0.5MB</br>Render Start times &lt; 0.5s.");
     $('#help3hdr').text("Third Parties");
-    $('#help3').text("Ensure you get a benefit from each third party tag added to the page.");
+    $('#help3').html("Ensure you get a benefit from each third party tag added to the page.");
 }
 
 function addStat(statsList,headline,strapline,value,suffix,format)
@@ -386,7 +396,7 @@ function addStat(statsList,headline,strapline,value,suffix,format)
     var lineValue = document.createElement("div");
     var txtHeadline = document.createTextNode(headline);
     var txtValue = document.createTextNode(value.toLocaleString('en-gb') + " " + suffix);
-    if(txtValue.length < 10)
+    if(txtValue.length < 9)
         lineValue.setAttribute("class","statvalue");
     else
         if(txtValue.length < 16)
@@ -473,9 +483,9 @@ function parseHarFileObjects()
     $('#help1hdr').text("Objects");
     $('#help1').html("A list of all of the page's objects and their sizes.");
     $('#help2hdr').text("Optimisation Target");
-    $('#help2').text("Minimise the number of objects on the page.");
+    $('#help2').html("Minimise the number of objects on the page.");
     $('#help3hdr').text("Optimisation Target");
-    $('#help3').text("Reduce the size of objects.");
+    $('#help3').html("Reduce the size of objects.");
 }
 
 function parseHarFileHeaders()
@@ -570,9 +580,9 @@ function parseHarFileHeaders()
    $('#help1hdr').text("Headers");
    $('#help1').html("Headers for all page objects; hover over fields to see interpretations.</br>Expand a row to view request and response headers.");
    $('#help2hdr').text("Optimisation Target");
-   $('#help2').text("Employ caching to reduce the need to reload objects when a user revisits a page.");
+   $('#help2').html("Employ caching to reduce the need to reload objects when a user revisits a page.");
    $('#help3hdr').text("Optimisation Target");
-   $('#help3').text("Ensure text objects are served compressed.");
+   $('#help3').html("Ensure text objects are served compressed.");
 }
 
 
@@ -704,9 +714,9 @@ function parseHarFileImages()
     $('#help1hdr').text("Images");
     $('#help1').html('Details of images, their format, size, quality settings and embedded metadata. Click "View" to see all of the images."');
     $('#help2hdr').text("Optimisation Target");
-    $('#help2').text("Reduce image quality to save on bytes");
+    $('#help2').html("Reduce image quality to save on bytes");
     $('#help3hdr').text("Optimisation Target");
-    $('#help3').text("Remove unnessary metadata.");
+    $('#help3').html("Remove unnessary metadata.");
 }
 
 function getFileName(url) {
@@ -1052,7 +1062,7 @@ function addTableBody(data,cType,subDataType = '',subdata = '')
                                                     field = formatNumber(field);
                                                     break;
                                                 case "br":
-    //console.log("subdata formatting adding break",field);
+//console.log("subdata formatting adding break",field);
                                                     paraHTML = "break";
                                                     break;
                                             }
@@ -1288,13 +1298,13 @@ function formatHeaders ( d ) {
     // `d` is the original data object for the row
     // get request and headers for the object
     var hdrs = getHeaders(d[2]);
-console.log(hdrs[0]);
-console.log(hdrs[1]);
+//console.log(hdrs[0]);
+//console.log(hdrs[1]);
     // request headers
     var areqheaders = [];
     var reqheaders = '';
     $.each( hdrs[0], function( krq, rqvalue ) {
-        console.log( rqvalue.name + ": " + rqvalue.value );
+//console.log( rqvalue.name + ": " + rqvalue.value );
         areqheaders.push (rqvalue.name + ": " + rqvalue.value);
     });
     reqheaders = areqheaders.join('</br>');
@@ -1303,7 +1313,7 @@ console.log(hdrs[1]);
     var rspheaders = '';
 
     $.each( hdrs[1], function( krs, rsvalue ) {
-        console.log( krs + ": " + rsvalue.name + " " + rsvalue.value );
+//console.log( krs + ": " + rsvalue.name + " " + rsvalue.value );
         arspheaders.push (rsvalue.name + ": " + rsvalue.value);
     });
     rspheaders = arspheaders.join('</br>');
