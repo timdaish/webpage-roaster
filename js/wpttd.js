@@ -747,7 +747,7 @@ function viewImagesinTable()
         var imagetoview = document.createElement("figure");
         imagetoview.setAttribute("id", "image_" + d[2]);
         $('#imagesview').append($(imagetoview));
-        $('#image_'+ d[2]).append($('<img>',{id:'theImg_'+ d[2],src:d[1],class: 'displayedimage'}));
+        $('#image_'+ d[2]).append($('<img>',{id:'theImg_'+ d[2],'data-src':d[1],class: 'displayedimage'}));
         $('#image_'+ d[2]).append($('<figcaption>' + filename + ' (' + filesize.toLocaleString('en-GB') + ' bytes)' + '</figcaption>'));
         //$('#imagesview').append($(imagetoview));
         
@@ -757,6 +757,8 @@ function viewImagesinTable()
         $(".displayedimage").click(function () {
             $(this).toggleClass("green");
          });
+
+         $(window).lazyLoadXT();
 }
 
 function extractImageMetadata()
