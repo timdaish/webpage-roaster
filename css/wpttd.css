@@ -5,6 +5,25 @@ body{
     font-size: 18px;
     display: inline-grid;
 }
+
+#top{
+    min-height: 100px;
+}
+#toptitle{
+    float: left;
+}
+#adLeaderboard{
+    width: 728px;
+    height: 90px;
+    background-color: rgb(13, 24, 70);
+    float: left;
+    margin: 0px 0px 0px 20px;
+}
+#adLeaderboardText{
+    text-align: center;
+    padding-left: 40px;
+    opacity: 0.3;
+}
 input{
 min-width: 470px;
 }
@@ -199,7 +218,6 @@ max-width: 300px;
     padding: 16px;
     text-decoration: none;
 }
-
 .links li a:hover {
     background-color: #445ce2;
     color: white;
@@ -229,6 +247,13 @@ a:visited {
     .footeritems { 
         margin-left: 30px;
     }
+    #adLeaderboard{
+        width: 320px;
+        height: 40px;
+        background-color: rgb(164, 161, 165);
+        float: left;
+        margin: 0px 0px 0px 20px;
+    }
 }
   @media screen and (max-width: 350px) {
     footer{
@@ -240,4 +265,10 @@ a:visited {
     .footeritems { 
         margin-left: 10px;
     }
+    #adLeaderboard{
+        width: 320px;
+        height: 40px;
+        background-color: rgb(164, 161, 165);
+        float: left;
+        margin: 0px 0px 0px 20px;
 }

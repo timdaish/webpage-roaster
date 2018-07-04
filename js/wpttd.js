@@ -12,6 +12,7 @@ var fvonly = true;
 
 $(document).ready(function(){
     dotestWptLink();
+    showLeaderboardAd();
     $("#summary").append('No page loaded');
     var instructions = '<h2>Instructions</h2>';
     instructions +='<ol><li>Run a test in WebPageTest</li><li>Copy the result link URL fromWebPageTest</li><li>Paste the link into Roaster&apos;s "WPT ID" input box at the top of this page and click "Read Results"</li>';
@@ -49,15 +50,21 @@ $( "#sbm" ).click(function() {
     clearDivs(true,true,true);
 //alert( "Handler for .click() called." );
     var wptlink = $('#wptlink').val();
-    // if(wptlink.slice(-1) != "/")
-    //     wptlink = wptlink + "/";
-    var test = getWPTResultsID(wptlink);
-    jobnumber = test.testid;
-    server = test.serverpath;
-//console.log ("server", test.serverpath);
-//console.log ("testid", test.testid);
-    harFile = getWPTResultsHarFile(test.serverpath, test.testid);
-    logAction(server,jobnumber,1,"ip",1);
+    var isURLValid = validateURL(wptlink);
+    
+    if(isURLValid)
+    {
+        // if(wptlink.slice(-1) != "/")
+        //     wptlink = wptlink + "/";
+        var test = getWPTResultsID(wptlink);
+        jobnumber = test.testid;
+        server = test.serverpath;
+    //console.log ("server", test.serverpath);
+    //console.log ("testid", test.testid);
+        harFile = getWPTResultsHarFile(test.serverpath, test.testid);
+        if(test.serverpath != '')
+            logAction(server,jobnumber,1,"ip",1);
+    }
 });
 
 $( "#optSummary" ).click(function() {
@@ -1273,6 +1280,15 @@ function myFunction() {
         x.className = "topnav";
     }
 }
+function validateURL(str) {
+    var pattern = new RegExp('(https?:\/\/).*(\/result)','gi'); // fragment locater
+    if(!pattern.test(str)) {
+      alert("Please enter a valid URL.");
+      return false;
+    } else {
+      return true;
+    }
+  }
 ////////////////////////////////////////////////////////////
 
 /* Formatting function for row details - modify as you need */
@@ -1444,19 +1460,27 @@ $.each(harFile, function(key,obj) {
 
 function logAction(svr,testid,msgid,msg,status)
 {
-    // post details for logging
-    $.ajax({
-        url: "xhr_logging.php", 
-        type: "POST",
-        data: { msgid: msgid, svr: svr, testid : testid, msg: msg, st: status }
-    })
-    .done(function() {
-//console.log( "success logging request " + msgid );
-    })
-    .fail(function() {
-//console.log( "error logging request " + msgid );
-    })
-    .always(function() {
-    //alert( "complete" );
-    });
+    // save log if server, testid and message are present
+    if(svr != '' && testid  != '' && msg != '')
+    {
+        // post details for logging
+        $.ajax({
+            url: "xhr_logging.php", 
+            type: "POST",
+            data: { msgid: msgid, svr: svr, testid : testid, msg: msg, st: status }
+        })
+        .done(function() {
+    //console.log( "success logging request " + msgid );
+        })
+        .fail(function() {
+    //console.log( "error logging request " + msgid );
+        })
+        .always(function() {
+        //alert( "complete" );
+        });
+    }
+}
+function showLeaderboardAd()
+{
+    $("#adLeaderboardText").html("<i>ad placeholder<i>");
 }
